@@ -48,12 +48,18 @@ router.post('/sort', (req, res) => {
           return users.sort((a, b) =>
             a.firstname > b.firstname
               ? 1
-              : a.lastname > b.lastname
-              ? 1
-              : a.age > b.age
-              ? 1
-              : a.sex > b.sex
-              ? 1
+              : a.firstname === b.firstname
+              ? a.lastname > b.lastname
+                ? 1
+                : a.lastname === b.lastname
+                ? a.age > b.age
+                  ? 1
+                  : a.age === b.age
+                  ? a.sex > b.sex
+                    ? 1
+                    : -1
+                  : -1
+                : -1
               : -1
           );
 
@@ -61,12 +67,18 @@ router.post('/sort', (req, res) => {
           return users.sort((a, b) =>
             a.lastname > b.lastname
               ? 1
-              : a.firstname > b.firstname
-              ? 1
-              : a.age > b.age
-              ? 1
-              : a.sex > b.sex
-              ? 1
+              : a.lastname === b.lastname
+              ? a.firstname > b.firstname
+                ? 1
+                : a.firstname === b.firstname
+                ? a.age > b.age
+                  ? 1
+                  : a.age === b.age
+                  ? a.sex > b.sex
+                    ? 1
+                    : -1
+                  : -1
+                : -1
               : -1
           );
 
@@ -74,12 +86,18 @@ router.post('/sort', (req, res) => {
           return users.sort((a, b) =>
             a.sex > b.sex
               ? 1
-              : a.firstname > b.firstname
-              ? 1
-              : a.lastname > b.lastname
-              ? 1
-              : a.age > b.age
-              ? 1
+              : a.sex === b.sex
+              ? a.firstname > b.firstname
+                ? 1
+                : a.firstname === b.firstname
+                ? a.lastname > b.lastname
+                  ? 1
+                  : a.lastname === b.lastname
+                  ? a.age > b.age
+                    ? 1
+                    : -1
+                  : -1
+                : -1
               : -1
           );
 
@@ -88,12 +106,18 @@ router.post('/sort', (req, res) => {
           return users.sort((a, b) =>
             a.age > b.age
               ? 1
-              : a.firstname > b.firstname
-              ? 1
-              : a.firstname > b.firname
-              ? 1
-              : a.sex > b.sex
-              ? 1
+              : a.age === b.age
+              ? a.firstname > b.firstname
+                ? 1
+                : a.firstname === b.firstname
+                ? a.lastname > b.lastname
+                  ? 1
+                  : a.lastname === b.lastname
+                  ? a.sex > b.sex
+                    ? 1
+                    : -1
+                  : -1
+                : -1
               : -1
           );
 
