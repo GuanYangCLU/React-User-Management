@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { setUserList } from '../redux/action-creators/users';
 import { connect } from 'react-redux';
 
-const Home = ({ users, setUserList }) => {
+const Home = ({ users, setUserList, history }) => {
   useEffect(() => setUserList());
 
   const [query, setQuery] = useState('');
@@ -15,7 +15,7 @@ const Home = ({ users, setUserList }) => {
   };
 
   const handleCreate = e => {
-    //
+    history.push('/createuser');
   };
 
   const handleEdit = e => {
