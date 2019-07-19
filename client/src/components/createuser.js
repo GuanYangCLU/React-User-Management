@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import { createUser } from '../redux/action-creators/users';
+import { setAlert } from '../redux/action-creators/alert';
 
-const CreateUser = () => {
+const CreateUser = ({ setAlert, createUser }) => {
   const [userData, setUserData] = useState({
     firstname: '',
     lastname: '',
@@ -11,13 +13,19 @@ const CreateUser = () => {
     repeat: ''
   });
 
+  const { firstname, lastname, sex, age, password, repeat } = userData;
+
   const handleCreate = e => {
     e.preventDefault();
-    createUser({ userData });
+    if (password !== repeat) {
+      setAlert('Password does not match!');
+    } else {
+      createUser({ firstname, lastname, sex, age, password });
+    }
   };
 
   const handleChange = e => {
-    setUserData(e.target.value);
+    setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
   const handleBack = () => {
@@ -30,42 +38,48 @@ const CreateUser = () => {
         <form onSubmit={e => handleCreate(e)}>
           <div>
             <input
-              value={data}
+              name='firstname'
+              value={firstname}
               onChange={e => handleChange(e)}
               placeholder='firstname'
             />
           </div>
           <div>
             <input
-              value={data}
+              name='lastname'
+              value={lastname}
               onChange={e => handleChange(e)}
               placeholder='lastname'
             />
           </div>
           <div>
             <input
-              value={data}
+              name='sex'
+              value={sex}
               onChange={e => handleChange(e)}
               placeholder='sex'
             />
           </div>
           <div>
             <input
-              value={data}
+              name='age'
+              value={age}
               onChange={e => handleChange(e)}
               placeholder='age'
             />
           </div>
           <div>
             <input
-              value={data}
+              name='password'
+              value={password}
               onChange={e => handleChange(e)}
               placeholder='password'
             />
           </div>
           <div>
             <input
-              value={data}
+              name='repeat'
+              value={repeat}
               onChange={e => handleChange(e)}
               placeholder='repeat'
             />
@@ -84,12 +98,13 @@ const CreateUser = () => {
 
 const mapStateToProps = state => {
   return {
-    users: state.users.users
+    // users: state.users.users
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
+    setAlert: alert => dispatch(setAlert(alert)),
     createUser: ({ userData }) => dispatch(createUser({ userData }))
   };
 };

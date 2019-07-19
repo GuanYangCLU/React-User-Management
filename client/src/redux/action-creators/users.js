@@ -30,3 +30,40 @@ export const setUserList = () => dispatch => {
     .then(res => dispatch(setUserListSuccess(res.data)))
     .catch(err => dispatch(setUserListError(err)));
 };
+
+// --------------
+
+const createUserStart = () => {
+  return {
+    type: 'CREATE_USER_START',
+    payload: {}
+  };
+};
+
+const createUserSuccess = userData => {
+  // data: user obj: {fn, ln, sex, age, pw}
+  return {
+    type: 'CREATE_USER_SUCCESS',
+    payload: userData
+  };
+};
+
+const createUserError = err => {
+  return {
+    type: 'CREATE_USER_ERROR',
+    payload: { error: err }
+  };
+};
+
+export const createUser = userData => dispatch => {
+  dispatch(createUserStart());
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  axios
+    .post('http://localhost:5000/api/users', userData, config)
+    .then(res => dispatch(createUserSuccess(res.data)))
+    .catch(err => dispatch(createUserError(err)));
+};
