@@ -21,7 +21,6 @@ const CreateUser = () => {
   };
 
   const handleBack = () => {
-    // does push cause rerender?
     history.push('/');
   };
 
