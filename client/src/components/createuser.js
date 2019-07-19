@@ -83,4 +83,19 @@ const CreateUser = () => {
   );
 };
 
-export default CreateUser;
+const mapStateToProps = state => {
+  return {
+    users: state.users.users
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    createUser: ({ userData }) => dispatch(createUser({ userData }))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CreateUser);
