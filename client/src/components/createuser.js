@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { createUser } from '../redux/action-creators/users';
+import { createUser, initUser } from '../redux/action-creators/users';
 import { setAlert } from '../redux/action-creators/alert';
 
-const CreateUser = ({ setAlert, createUser }) => {
+const CreateUser = ({
+  setAlert,
+  createUser,
+  alertContent,
+  history,
+  createSuccess,
+  initUser
+}) => {
+  useEffect(() => initUser());
+
   const [userData, setUserData] = useState({
-    firstname: '',
-    lastname: '',
-    sex: '',
-    age: '',
-    password: '',
-    repeat: ''
+    firstname: null,
+    lastname: null,
+    sex: null,
+    age: null,
+    password: null,
+    repeat: null
   });
 
   const { firstname, lastname, sex, age, password, repeat } = userData;
+
+  // const submitUser = async () => {
+  //   let rs = await createUser({ firstname, lastname, sex, age, password });
+  //   console.log(rs);
+  //   if (rs === 'success') {
+  //     initUser();
+  //     history.push('/');
+  //   } else {
+  //     setAlert('Failed to create!');
+  //   }
+  // };
 
   const handleCreate = e => {
     e.preventDefault();
@@ -34,78 +55,100 @@ const CreateUser = ({ setAlert, createUser }) => {
 
   return (
     <div>
-      <div>
-        <form onSubmit={e => handleCreate(e)}>
+      {createSuccess ? (
+        <Redirect to='/' />
+      ) : (
+        <div>
           <div>
-            <input
-              name='firstname'
-              value={firstname}
-              onChange={e => handleChange(e)}
-              placeholder='firstname'
-            />
+            <form onSubmit={e => handleCreate(e)}>
+              <small>Blank with * is reuiqred</small>
+              <div>
+                * First Name:{' '}
+                <input
+                  name='firstname'
+                  value={firstname}
+                  onChange={e => handleChange(e)}
+                  placeholder='firstname'
+                />
+              </div>
+              <div>
+                * Last Name:{' '}
+                <input
+                  name='lastname'
+                  value={lastname}
+                  onChange={e => handleChange(e)}
+                  placeholder='lastname'
+                />
+              </div>
+              <div>
+                * Sex:{' '}
+                <input
+                  name='sex'
+                  value={sex}
+                  onChange={e => handleChange(e)}
+                  placeholder='sex'
+                />
+              </div>
+              <div>
+                * Age:{' '}
+                <input
+                  name='age'
+                  value={age}
+                  onChange={e => handleChange(e)}
+                  placeholder='age'
+                />
+              </div>
+              <div>
+                * Password:{' '}
+                <input
+                  name='password'
+                  value={password}
+                  onChange={e => handleChange(e)}
+                  placeholder='password'
+                />
+              </div>
+              <div>
+                * Repet:{' '}
+                <input
+                  name='repeat'
+                  value={repeat}
+                  onChange={e => handleChange(e)}
+                  placeholder='repeat'
+                />
+              </div>
+              <div>
+                <input
+                  value='Submit'
+                  type='submit'
+                  disabled={
+                    !(firstname && lastname && sex && age && password && repeat)
+                  }
+                />
+              </div>
+            </form>
+            <div>{alertContent}</div>
           </div>
           <div>
-            <input
-              name='lastname'
-              value={lastname}
-              onChange={e => handleChange(e)}
-              placeholder='lastname'
-            />
+            <button onClick={handleBack}>Back</button>
           </div>
-          <div>
-            <input
-              name='sex'
-              value={sex}
-              onChange={e => handleChange(e)}
-              placeholder='sex'
-            />
-          </div>
-          <div>
-            <input
-              name='age'
-              value={age}
-              onChange={e => handleChange(e)}
-              placeholder='age'
-            />
-          </div>
-          <div>
-            <input
-              name='password'
-              value={password}
-              onChange={e => handleChange(e)}
-              placeholder='password'
-            />
-          </div>
-          <div>
-            <input
-              name='repeat'
-              value={repeat}
-              onChange={e => handleChange(e)}
-              placeholder='repeat'
-            />
-          </div>
-          <div>
-            <input value='Submit' type='submit' />
-          </div>
-        </form>
-      </div>
-      <div>
-        <button onClick={handleBack}>Back</button>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
 
 const mapStateToProps = state => {
   return {
-    // users: state.users.users
+    alertContent: state.alert.alertContent,
+    createSuccess: state.user.createSuccess
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     setAlert: alert => dispatch(setAlert(alert)),
-    createUser: ({ userData }) => dispatch(createUser({ userData }))
+    createUser: data => dispatch(createUser(data)),
+    initUser: () => dispatch(initUser())
   };
 };
 

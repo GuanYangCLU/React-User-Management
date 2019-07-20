@@ -64,6 +64,23 @@ export const createUser = userData => dispatch => {
   };
   axios
     .post('http://localhost:5000/api/users', userData, config)
-    .then(res => dispatch(createUserSuccess(res.data)))
+    .then(res => {
+      dispatch(createUserSuccess(res.data));
+      return 'success';
+    })
     .catch(err => dispatch(createUserError(err)));
+};
+
+export const initUser = () => dispatch => {
+  dispatch({
+    type: 'INIT_USER',
+    payload: {
+      firstname: null,
+      lastname: null,
+      sex: null,
+      age: null,
+      password: null,
+      createSuccess: false
+    }
+  });
 };

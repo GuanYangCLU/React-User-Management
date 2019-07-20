@@ -13,3 +13,5 @@ const alert = (state = initState, action) => {
       return state;
   }
 };
+
+export default alert;

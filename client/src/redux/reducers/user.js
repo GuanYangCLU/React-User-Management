@@ -5,7 +5,8 @@ const initState = {
   age: null,
   password: null,
   error: null,
-  isLoading: false
+  isLoading: false,
+  createSuccess: false
 };
 
 const user = (state = initState, action) => {
@@ -14,9 +15,11 @@ const user = (state = initState, action) => {
     case 'CREATE_USER_START':
       return { ...state, isLoading: true };
     case 'CREATE_USER_SUCCESS':
-      return { ...state, ...payload, isLoading: false };
+      return { ...state, ...payload, isLoading: false, createSuccess: true };
     case 'CREATE_USER_ERROR':
       return { ...state, ...payload, isLoading: false };
+    case 'INIT_USER':
+      return { ...state, ...payload };
     default:
       return state;
   }
