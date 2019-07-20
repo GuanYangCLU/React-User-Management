@@ -9,7 +9,7 @@ const initState = {
   createSuccess: false
 };
 
-const user = (state = initState, action) => {
+const createUser = (state = initState, action) => {
   const { type, payload } = action;
   switch (type) {
     case 'CREATE_USER_START':
@@ -25,4 +25,4 @@ const user = (state = initState, action) => {
   }
 };
 
-export default user;
+export default createUser;

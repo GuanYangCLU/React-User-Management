@@ -64,10 +64,7 @@ export const createUser = userData => dispatch => {
   };
   axios
     .post('http://localhost:5000/api/users', userData, config)
-    .then(res => {
-      dispatch(createUserSuccess(res.data));
-      return 'success';
-    })
+    .then(res => dispatch(createUserSuccess(res.data)))
     .catch(err => dispatch(createUserError(err)));
 };
 
@@ -83,4 +80,74 @@ export const initUser = () => dispatch => {
       createSuccess: false
     }
   });
+};
+
+// ---------
+
+const editUserStart = () => {
+  return {
+    type: 'EDIT_USER_START',
+    payload: {}
+  };
+};
+
+const editUserSuccess = userData => {
+  // data: user obj: {fn, ln, sex, age, pw}
+  return {
+    type: 'EDIT_USER_SUCCESS',
+    payload: userData
+  };
+};
+
+const editUserError = err => {
+  return {
+    type: 'EDIT_USER_ERROR',
+    payload: { error: err }
+  };
+};
+
+export const editUser = userData => dispatch => {
+  dispatch(editUserStart());
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  axios
+    .put(`http://localhost:5000/api/users/${userData.id}`, userData, config)
+    .then(res => dispatch(editUserSuccess(res.data)))
+    .catch(err => dispatch(editUserError(err)));
+};
+
+// -------
+
+const getUserStart = () => {
+  return {
+    type: 'GET_USER_START',
+    payload: {}
+  };
+};
+
+const getUserSuccess = userData => {
+  // data: Array of user obj
+  console.log(userData);
+  return {
+    type: 'GET_USER_SUCCESS',
+    payload: { user: userData }
+  };
+};
+
+const getUserError = err => {
+  return {
+    type: 'GET_USER_ERROR',
+    payload: { error: err }
+  };
+};
+
+export const getUser = id => dispatch => {
+  dispatch(getUserStart());
+  axios
+    .get(`http://localhost:5000/api/users/${id}`)
+    .then(res => dispatch(getUserSuccess(res.data)))
+    .catch(err => dispatch(getUserError(err)));
 };

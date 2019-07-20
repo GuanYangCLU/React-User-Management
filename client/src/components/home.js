@@ -18,11 +18,11 @@ const Home = ({ users, setUserList, history }) => {
     history.push('/createuser');
   };
 
-  const handleEdit = e => {
-    //
+  const handleEdit = id => {
+    history.push(`/edituser/${id}`);
   };
 
-  const handleDelete = e => {
+  const handleDelete = id => {
     //
   };
 

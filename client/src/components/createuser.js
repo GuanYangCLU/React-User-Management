@@ -140,7 +140,7 @@ const CreateUser = ({
 const mapStateToProps = state => {
   return {
     alertContent: state.alert.alertContent,
-    createSuccess: state.user.createSuccess
+    createSuccess: state.createUser.createSuccess
   };
 };
 
