@@ -18,6 +18,8 @@ const editUser = (state = initState, action) => {
       return { ...state, ...payload, isLoading: false, editSuccess: true };
     case 'EDIT_USER_ERROR':
       return { ...state, ...payload, isLoading: false };
+    case 'INIT_EDIT':
+      return { ...state, ...payload };
     default:
       return state;
   }

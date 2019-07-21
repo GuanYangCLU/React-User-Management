@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { setUserList } from '../redux/action-creators/users';
 import { connect } from 'react-redux';
+import { initUser, initEdit } from '../redux/action-creators/users';
 
-const Home = ({ users, setUserList, history }) => {
-  useEffect(() => setUserList());
+const Home = ({ users, setUserList, history, initUser, initEdit }) => {
+  useEffect(() => {
+    initUser();
+    initEdit();
+    setUserList();
+  }, []);
 
   const [query, setQuery] = useState('');
   const handleChange = e => {
@@ -108,7 +113,9 @@ const mapStateToProps = state => {
 
 const mapStateToDispatch = dispatch => {
   return {
-    setUserList: () => dispatch(setUserList())
+    setUserList: () => dispatch(setUserList()),
+    initUser: () => dispatch(initUser()),
+    initEdit: () => dispatch(initEdit())
   };
 };
 

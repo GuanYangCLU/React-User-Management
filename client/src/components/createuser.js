@@ -12,7 +12,7 @@ const CreateUser = ({
   createSuccess,
   initUser
 }) => {
-  useEffect(() => initUser());
+  // useEffect(() => initUser(), []); // may not need anymore
 
   const [userData, setUserData] = useState({
     firstname: null,

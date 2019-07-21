@@ -121,33 +121,64 @@ export const editUser = userData => dispatch => {
 
 // -------
 
-const getUserStart = () => {
-  return {
-    type: 'GET_USER_START',
-    payload: {}
-  };
+export const initEdit = () => dispatch => {
+  console.log('init dispatch');
+  dispatch({
+    type: 'INIT_EDIT',
+    payload: {
+      firstname: null,
+      lastname: null,
+      sex: null,
+      age: null,
+      password: null,
+      editSuccess: false
+    }
+  });
 };
 
-const getUserSuccess = userData => {
-  // data: Array of user obj
-  console.log(userData);
-  return {
-    type: 'GET_USER_SUCCESS',
-    payload: { user: userData }
-  };
-};
+// const getUserStart = () => {
+//   return {
+//     type: 'GET_USER_START',
+//     payload: {}
+//   };
+// };
 
-const getUserError = err => {
-  return {
-    type: 'GET_USER_ERROR',
-    payload: { error: err }
-  };
-};
+// const getUserSuccess = userData => {
+//   // data: Array of user obj
+//   console.log(userData);
+//   return {
+//     type: 'GET_USER_SUCCESS',
+//     payload: userData
+//   };
+// };
 
-export const getUser = id => dispatch => {
-  dispatch(getUserStart());
-  axios
-    .get(`http://localhost:5000/api/users/${id}`)
-    .then(res => dispatch(getUserSuccess(res.data)))
-    .catch(err => dispatch(getUserError(err)));
-};
+// const getUserError = err => {
+//   return {
+//     type: 'GET_USER_ERROR',
+//     payload: { error: err }
+//   };
+// };
+
+// export const getUser = id => dispatch => {
+//   dispatch(getUserStart());
+//   axios
+//     .get(`http://localhost:5000/api/users/${id}`)
+//     .then(res => dispatch(getUserSuccess(res.data)))
+//     .catch(err => dispatch(getUserError(err)));
+// };
+
+// export const getInit = () => dispatch => {
+//   dispatch({
+//     type: 'GET_INIT',
+//     payload: {
+//       firstname: null,
+//       lastname: null,
+//       sex: null,
+//       age: null,
+//       password: null,
+//       //   user: {},
+//       isLoading: false,
+//       getSuccess: false
+//     }
+//   });
+// };
