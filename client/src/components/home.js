@@ -20,7 +20,10 @@ const Home = ({
   }, []);
 
   const [query, setQuery] = useState('');
-  // const [curDeleteId, setDeleteId] = useState(null);
+
+  const [actAttr, setActAttr] = useState(null);
+  const [sortOn, setSortOn] = useState(false);
+
   const handleChange = e => {
     setQuery(e.target.value);
   };
@@ -44,7 +47,93 @@ const Home = ({
   };
 
   const handleSort = e => {
-    console.log(e.target);
+    setSortOn(!sortOn);
+    setActAttr(e.target.id);
+  };
+
+  const sortUserByAttr = (users, attribute) => {
+    // Don't change the USERS array!
+    switch (attribute) {
+      case 'firstname':
+        return [...users].sort((a, b) =>
+          a.firstname > b.firstname
+            ? 1
+            : a.firstname === b.firstname
+            ? a.lastname > b.lastname
+              ? 1
+              : a.lastname === b.lastname
+              ? a.age > b.age
+                ? 1
+                : a.age === b.age
+                ? a.sex > b.sex
+                  ? 1
+                  : -1
+                : -1
+              : -1
+            : -1
+        );
+
+      case 'lastname':
+        return [...users].sort((a, b) =>
+          a.lastname > b.lastname
+            ? 1
+            : a.lastname === b.lastname
+            ? a.firstname > b.firstname
+              ? 1
+              : a.firstname === b.firstname
+              ? a.age > b.age
+                ? 1
+                : a.age === b.age
+                ? a.sex > b.sex
+                  ? 1
+                  : -1
+                : -1
+              : -1
+            : -1
+        );
+
+      case 'sex':
+        return [...users].sort((a, b) =>
+          a.sex > b.sex
+            ? 1
+            : a.sex === b.sex
+            ? a.firstname > b.firstname
+              ? 1
+              : a.firstname === b.firstname
+              ? a.lastname > b.lastname
+                ? 1
+                : a.lastname === b.lastname
+                ? a.age > b.age
+                  ? 1
+                  : -1
+                : -1
+              : -1
+            : -1
+        );
+
+      case 'age':
+        // console.log([...users][0].age);
+        return [...users].sort((a, b) =>
+          a.age > b.age
+            ? 1
+            : a.age === b.age
+            ? a.firstname > b.firstname
+              ? 1
+              : a.firstname === b.firstname
+              ? a.lastname > b.lastname
+                ? 1
+                : a.lastname === b.lastname
+                ? a.sex > b.sex
+                  ? 1
+                  : -1
+                : -1
+              : -1
+            : -1
+        );
+
+      default:
+        return [...users];
+    }
   };
 
   const handlePrevPage = e => {
@@ -69,12 +158,20 @@ const Home = ({
             <thead>
               <th>Edit</th>
               <th>Delete</th>
-              <th onClick={e => handleSort(e)}>First Name</th>
-              <th>Last Name</th>
-              <th>Sex</th>
-              <th>Age</th>
+              <th id='firstname' onClick={e => handleSort(e)}>
+                First Name
+              </th>
+              <th id='lastname' onClick={e => handleSort(e)}>
+                Last Name
+              </th>
+              <th id='sex' onClick={e => handleSort(e)}>
+                Sex
+              </th>
+              <th id='age' onClick={e => handleSort(e)}>
+                Age
+              </th>
             </thead>
-            {users.map(user => {
+            {(sortOn ? sortUserByAttr(users, actAttr) : users).map(user => {
               return (
                 !isLoading &&
                 deleteIds.indexOf(user._id) === -1 && (

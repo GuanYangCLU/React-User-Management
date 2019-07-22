@@ -44,8 +44,9 @@ router.post('/sort', (req, res) => {
   User.find()
     .then(users => {
       switch (req.body.attribute) {
+        // Don't change the USERS array!
         case 'firstname':
-          return users.sort((a, b) =>
+          return [...users].sort((a, b) =>
             a.firstname > b.firstname
               ? 1
               : a.firstname === b.firstname
@@ -64,7 +65,7 @@ router.post('/sort', (req, res) => {
           );
 
         case 'lastname':
-          return users.sort((a, b) =>
+          return [...users].sort((a, b) =>
             a.lastname > b.lastname
               ? 1
               : a.lastname === b.lastname
@@ -83,7 +84,7 @@ router.post('/sort', (req, res) => {
           );
 
         case 'sex':
-          return users.sort((a, b) =>
+          return [...users].sort((a, b) =>
             a.sex > b.sex
               ? 1
               : a.sex === b.sex
@@ -102,8 +103,8 @@ router.post('/sort', (req, res) => {
           );
 
         case 'age':
-          // console.log(users[0].age);
-          return users.sort((a, b) =>
+          // console.log([...users][0].age);
+          return [...users].sort((a, b) =>
             a.age > b.age
               ? 1
               : a.age === b.age
@@ -122,7 +123,7 @@ router.post('/sort', (req, res) => {
           );
 
         default:
-          return users;
+          return [...users];
       }
     })
     .then(users => res.status(200).json(users))
