@@ -43,6 +43,10 @@ const Home = ({
     // console.log(id, 'del');
   };
 
+  const handleSort = e => {
+    console.log(e.target);
+  };
+
   const handlePrevPage = e => {
     //
   };
@@ -65,7 +69,7 @@ const Home = ({
             <thead>
               <th>Edit</th>
               <th>Delete</th>
-              <th>First Name</th>
+              <th onClick={e => handleSort(e)}>First Name</th>
               <th>Last Name</th>
               <th>Sex</th>
               <th>Age</th>
