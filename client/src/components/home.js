@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { setUserList } from '../redux/action-creators/users';
 import { connect } from 'react-redux';
-import { initUser, initEdit } from '../redux/action-creators/users';
+import { initUser, initEdit, deleteUser } from '../redux/action-creators/users';
 
-const Home = ({ users, setUserList, history, initUser, initEdit }) => {
+const Home = ({
+  users,
+  setUserList,
+  history,
+  initUser,
+  initEdit,
+  deleteUser,
+  deleteIds,
+  isLoading
+}) => {
   useEffect(() => {
     initUser();
     initEdit();
@@ -11,6 +20,7 @@ const Home = ({ users, setUserList, history, initUser, initEdit }) => {
   }, []);
 
   const [query, setQuery] = useState('');
+  // const [curDeleteId, setDeleteId] = useState(null);
   const handleChange = e => {
     setQuery(e.target.value);
   };
@@ -28,7 +38,9 @@ const Home = ({ users, setUserList, history, initUser, initEdit }) => {
   };
 
   const handleDelete = id => {
-    //
+    deleteUser(id);
+    // setDeleteId(id);
+    // console.log(id, 'del');
   };
 
   const handlePrevPage = e => {
@@ -60,20 +72,23 @@ const Home = ({ users, setUserList, history, initUser, initEdit }) => {
             </thead>
             {users.map(user => {
               return (
-                <tr className='user' key={user._id}>
-                  <td>
-                    <button onClick={e => handleEdit(user._id)}>Edit</button>
-                  </td>
-                  <td>
-                    <button onClick={e => handleDelete(user._id)}>
-                      Delete
-                    </button>
-                  </td>
-                  <td>{user.firstname}</td>
-                  <td>{user.lastname}</td>
-                  <td>{user.sex}</td>
-                  <td>{user.age}</td>
-                </tr>
+                !isLoading &&
+                deleteIds.indexOf(user._id) === -1 && (
+                  <tr className='user' key={user._id}>
+                    <td>
+                      <button onClick={e => handleEdit(user._id)}>Edit</button>
+                    </td>
+                    <td>
+                      <button onClick={e => handleDelete(user._id)}>
+                        Delete
+                      </button>
+                    </td>
+                    <td>{user.firstname}</td>
+                    <td>{user.lastname}</td>
+                    <td>{user.sex}</td>
+                    <td>{user.age}</td>
+                  </tr>
+                )
               );
             })}
           </table>
@@ -101,13 +116,16 @@ const Home = ({ users, setUserList, history, initUser, initEdit }) => {
       <div>
         <button onClick={e => handleCreate()}>Create New User</button>
       </div>
+      {/* <div>{deleteIds.length + ' here! ' + isLoading + users.length}</div> */}
     </div>
   );
 };
 
 const mapStateToProps = state => {
   return {
-    users: state.users.users
+    users: state.users.users,
+    deleteIds: state.deleteUser.deleteIds,
+    isLoading: state.users.isLoading
   };
 };
 
@@ -115,7 +133,8 @@ const mapStateToDispatch = dispatch => {
   return {
     setUserList: () => dispatch(setUserList()),
     initUser: () => dispatch(initUser()),
-    initEdit: () => dispatch(initEdit())
+    initEdit: () => dispatch(initEdit()),
+    deleteUser: id => dispatch(deleteUser(id))
   };
 };
 

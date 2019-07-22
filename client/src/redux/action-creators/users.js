@@ -122,7 +122,7 @@ export const editUser = userData => dispatch => {
 // -------
 
 export const initEdit = () => dispatch => {
-  console.log('init dispatch');
+  // console.log('init dispatch');
   dispatch({
     type: 'INIT_EDIT',
     payload: {
@@ -136,49 +136,44 @@ export const initEdit = () => dispatch => {
   });
 };
 
-// const getUserStart = () => {
-//   return {
-//     type: 'GET_USER_START',
-//     payload: {}
-//   };
-// };
+// --------
 
-// const getUserSuccess = userData => {
-//   // data: Array of user obj
-//   console.log(userData);
-//   return {
-//     type: 'GET_USER_SUCCESS',
-//     payload: userData
-//   };
-// };
+const deleteUserStart = () => {
+  return {
+    type: 'DELETE_USER_START',
+    payload: {}
+  };
+};
 
-// const getUserError = err => {
-//   return {
-//     type: 'GET_USER_ERROR',
-//     payload: { error: err }
-//   };
-// };
+const deleteUserSuccess = userData => {
+  // console.log(userData);
+  return {
+    type: 'DELETE_USER_SUCCESS',
+    payload: userData
+  };
+};
 
-// export const getUser = id => dispatch => {
-//   dispatch(getUserStart());
-//   axios
-//     .get(`http://localhost:5000/api/users/${id}`)
-//     .then(res => dispatch(getUserSuccess(res.data)))
-//     .catch(err => dispatch(getUserError(err)));
-// };
+const deleteUserError = err => {
+  return {
+    type: 'DELETE_USER_ERROR',
+    payload: { error: err }
+  };
+};
 
-// export const getInit = () => dispatch => {
+export const deleteUser = id => dispatch => {
+  dispatch(deleteUserStart());
+  // console.log('ido delete');
+  axios
+    .delete(`http://localhost:5000/api/users/${id}`)
+    .then(res => dispatch(deleteUserSuccess(res.data)))
+    .catch(err => dispatch(deleteUserError(err)));
+};
+
+// export const initDelete = () => dispatch => {
 //   dispatch({
-//     type: 'GET_INIT',
+//     type: 'INIT_DELETE',
 //     payload: {
-//       firstname: null,
-//       lastname: null,
-//       sex: null,
-//       age: null,
-//       password: null,
-//       //   user: {},
-//       isLoading: false,
-//       getSuccess: false
+//       deleteSuccess: false
 //     }
 //   });
 // };
