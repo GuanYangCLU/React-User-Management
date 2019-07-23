@@ -147,15 +147,15 @@ const Home = ({
   };
 
   const handlePrevPage = e => {
-    //
+    setActivePage(activePage - 1);
   };
 
   const handleNextPage = e => {
-    //
+    setActivePage(activePage + 1);
   };
 
   const handlePageChange = e => {
-    console.log(e.target.innerText);
+    // console.log(e.target.innerText);
     setActivePage(e.target.innerText);
   };
 
