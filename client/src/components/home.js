@@ -19,11 +19,18 @@ const Home = ({
     setUserList();
   }, []);
 
+  const maxRowsPerPage = 10; // set max rows per page
+  let i = 0; // init index of users
+  // @@ is this DANGEROUS ?
+
   const [query, setQuery] = useState('');
 
   const [actAttr, setActAttr] = useState(null);
   const [sortOn, setSortOn] = useState(false); // click to sort, db click to unsort
   const [queryCur, setQueryCur] = useState(null); // store the query for search
+
+  const [activePage, setActivePage] = useState(1);
+  // if need remember page back, try redux
 
   const handleChange = e => {
     setQuery(e.target.value);
@@ -147,6 +154,11 @@ const Home = ({
     //
   };
 
+  const handlePageChange = e => {
+    console.log(e.target.innerText);
+    setActivePage(e.target.innerText);
+  };
+
   return (
     <div>
       <div>
@@ -191,37 +203,51 @@ const Home = ({
               : sortOn
               ? sortUserByAttr(users, actAttr)
               : users
-            ).map(user => {
-              return (
-                !isLoading &&
-                deleteIds.indexOf(user._id) === -1 && (
-                  <tr className='user' key={user._id}>
-                    <td>
-                      <button onClick={e => handleEdit(user._id)}>Edit</button>
-                    </td>
-                    <td>
-                      <button onClick={e => handleDelete(user._id)}>
-                        Delete
-                      </button>
-                    </td>
-                    <td>{user.firstname}</td>
-                    <td>{user.lastname}</td>
-                    <td>{user.sex}</td>
-                    <td>{user.age}</td>
-                  </tr>
-                )
-              );
-            })}
+            )
+              .map(user => {
+                return {
+                  ...user,
+                  index: i++
+                };
+              })
+              .filter(
+                user =>
+                  (activePage - 1) * maxRowsPerPage <= user.index &&
+                  activePage * maxRowsPerPage > user.index
+              )
+              .map(user => {
+                return (
+                  !isLoading &&
+                  deleteIds.indexOf(user._id) === -1 && (
+                    <tr className='user' key={user._id}>
+                      <td>
+                        <button onClick={e => handleEdit(user._id)}>
+                          Edit
+                        </button>
+                      </td>
+                      <td>
+                        <button onClick={e => handleDelete(user._id)}>
+                          Delete
+                        </button>
+                      </td>
+                      <td>{user.firstname}</td>
+                      <td>{user.lastname}</td>
+                      <td>{user.sex}</td>
+                      <td>{user.age}</td>
+                    </tr>
+                  )
+                );
+              })}
           </table>
         </div>
         <div style={{ display: 'flex' }}>
           <button onClick={e => handlePrevPage()}>Prev Page</button>
           <ul style={{ display: 'flex', listStyle: 'none' }}>
             <li>
-              <button>1</button>
+              <button onClick={e => handlePageChange(e)}>1</button>
             </li>
             <li>
-              <button>2</button>
+              <button onClick={e => handlePageChange(e)}>2</button>
             </li>
             ...
             <li>
