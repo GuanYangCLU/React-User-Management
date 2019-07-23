@@ -22,14 +22,17 @@ const Home = ({
   const [query, setQuery] = useState('');
 
   const [actAttr, setActAttr] = useState(null);
-  const [sortOn, setSortOn] = useState(false);
+  const [sortOn, setSortOn] = useState(false); // click to sort, db click to unsort
+  const [queryCur, setQueryCur] = useState(null); // store the query for search
 
   const handleChange = e => {
     setQuery(e.target.value);
   };
 
   const handleSearch = e => {
-    //
+    // console.log(query);
+    e.preventDefault();
+    setQueryCur(query);
   };
 
   const handleCreate = e => {
@@ -148,8 +151,8 @@ const Home = ({
     <div>
       <div>
         <form onSubmit={e => handleSearch(e)}>
-          <input value={query} onChange={e => handleChange(e)} />
-          <input type='submit' value='Search' />
+          Search: <input value={query} onChange={e => handleChange(e)} />
+          {/* <input type='submit' value='Search' /> */}
         </form>
       </div>
       <div>
@@ -171,7 +174,24 @@ const Home = ({
                 Age
               </th>
             </thead>
-            {(sortOn ? sortUserByAttr(users, actAttr) : users).map(user => {
+            {(queryCur
+              ? (sortOn ? sortUserByAttr(users, actAttr) : users).filter(
+                  user =>
+                    user.firstname
+                      .toLowerCase()
+                      .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
+                    user.lastname
+                      .toLowerCase()
+                      .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
+                    user.sex
+                      .toLowerCase()
+                      .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
+                    user.age.toString().indexOf(queryCur.toString()) !== -1
+                )
+              : sortOn
+              ? sortUserByAttr(users, actAttr)
+              : users
+            ).map(user => {
               return (
                 !isLoading &&
                 deleteIds.indexOf(user._id) === -1 && (
