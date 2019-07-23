@@ -20,10 +20,11 @@ const Home = ({
   }, []);
 
   const maxRowsPerPage = 10; // set max rows per page
-  let i = 0; // init index of users
+  let activeUsers = 0; // init index of users
   // @@ is this DANGEROUS ?
 
   const [query, setQuery] = useState('');
+  const [goToPage, setGoToPage] = useState('');
 
   const [actAttr, setActAttr] = useState(null);
   const [sortOn, setSortOn] = useState(false); // click to sort, db click to unsort
@@ -33,7 +34,11 @@ const Home = ({
   // if need remember page back, try redux
 
   const handleChange = e => {
-    setQuery(e.target.value);
+    if (e.target.id === 'search') {
+      setQuery(e.target.value);
+    } else if (e.target.id === 'goto') {
+      setGoToPage(e.target.value);
+    }
   };
 
   const handleSearch = e => {
@@ -52,6 +57,10 @@ const Home = ({
 
   const handleDelete = id => {
     deleteUser(id);
+    if (activeUsers === (activePage - 1) * maxRowsPerPage + 1) {
+      // if it is this page's last user, after delete, back to prev page
+      setActivePage(activePage - 1);
+    }
     // setDeleteId(id);
     // console.log(id, 'del');
   };
@@ -155,15 +164,21 @@ const Home = ({
   };
 
   const handlePageChange = e => {
-    // console.log(e.target.innerText);
-    setActivePage(e.target.innerText);
+    setActivePage(e.target.innerText); // for button(btn dont have value)
+  };
+
+  const handlePageGoTo = e => {
+    // console.log(e.target.tagName); // FORM
+    e.preventDefault();
+    if (!isNaN(goToPage)) setActivePage(goToPage); // prevent invalid input
   };
 
   return (
     <div>
       <div>
         <form onSubmit={e => handleSearch(e)}>
-          Search: <input value={query} onChange={e => handleChange(e)} />
+          Search:{' '}
+          <input id='search' value={query} onChange={e => handleChange(e)} />
           {/* <input type='submit' value='Search' /> */}
         </form>
       </div>
@@ -205,11 +220,16 @@ const Home = ({
               : users
             )
               .map(user => {
-                return {
-                  ...user,
-                  index: i++
-                };
+                if (deleteIds.indexOf(user._id) === -1) {
+                  return {
+                    ...user,
+                    index: activeUsers++
+                  };
+                } else {
+                  return null; // id in deleteId list
+                }
               })
+              .filter(user => user) // user exists
               .filter(
                 user =>
                   (activePage - 1) * maxRowsPerPage <= user.index &&
@@ -241,7 +261,9 @@ const Home = ({
           </table>
         </div>
         <div style={{ display: 'flex' }}>
-          <button onClick={e => handlePrevPage()}>Prev Page</button>
+          <button onClick={e => handlePrevPage()} disabled={activePage < 2}>
+            Prev Page
+          </button>
           <ul style={{ display: 'flex', listStyle: 'none' }}>
             <li>
               <button onClick={e => handlePageChange(e)}>1</button>
@@ -251,19 +273,28 @@ const Home = ({
             </li>
             ...
             <li>
-              <button>8</button>
-            </li>
-            <li>
-              <button>9</button>
+              <button onClick={e => handlePageChange(e)}>
+                {parseInt((activeUsers - 1) / maxRowsPerPage) + 1}
+              </button>
             </li>
           </ul>
-          <button onClick={e => handleNextPage()}>Next Page</button>
+          <button
+            onClick={e => handleNextPage()}
+            disabled={activePage > parseInt((activeUsers - 1) / maxRowsPerPage)}
+          >
+            Next Page
+          </button>
+        </div>
+        <div>
+          <form onSubmit={e => handlePageGoTo(e)}>
+            Go to page:{' '}
+            <input id='goto' value={goToPage} onChange={e => handleChange(e)} />
+          </form>
         </div>
       </div>
       <div>
         <button onClick={e => handleCreate()}>Create New User</button>
       </div>
-      {/* <div>{deleteIds.length + ' here! ' + isLoading + users.length}</div> */}
     </div>
   );
 };
