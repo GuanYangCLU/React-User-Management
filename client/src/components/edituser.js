@@ -14,7 +14,7 @@ const EditUser = ({
   history,
   editSuccess,
   match,
-  initEdit
+  isLoading
 }) => {
   const id = match.params.userId;
 
@@ -67,6 +67,10 @@ const EditUser = ({
     <div>
       {editSuccess ? (
         <Redirect to='/' />
+      ) : isLoading ? (
+        <div>
+          <h1>Loading</h1>
+        </div>
       ) : (
         <div>
           <div>
@@ -150,7 +154,8 @@ const EditUser = ({
 const mapStateToProps = state => {
   return {
     alertContent: state.alert.alertContent,
-    editSuccess: state.editUser.editSuccess
+    editSuccess: state.editUser.editSuccess,
+    isLoading: state.editUser.isLoading
   };
 };
 

@@ -10,7 +10,7 @@ const CreateUser = ({
   alertContent,
   history,
   createSuccess,
-  initUser
+  isLoading
 }) => {
   // useEffect(() => initUser(), []); // may not need anymore
 
@@ -57,6 +57,10 @@ const CreateUser = ({
     <div>
       {createSuccess ? (
         <Redirect to='/' />
+      ) : isLoading ? (
+        <div>
+          <h1>Loading</h1>
+        </div>
       ) : (
         <div>
           <div>
@@ -140,7 +144,8 @@ const CreateUser = ({
 const mapStateToProps = state => {
   return {
     alertContent: state.alert.alertContent,
-    createSuccess: state.createUser.createSuccess
+    createSuccess: state.createUser.createSuccess,
+    isLoading: state.createUser.isLoading
   };
 };
 
