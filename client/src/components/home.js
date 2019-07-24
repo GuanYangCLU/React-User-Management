@@ -21,7 +21,7 @@ const Home = ({
     // console.log(setPagination(2, 1));
   }, []);
 
-  const maxRowsPerPage = 10; // set max rows per page
+  const maxRowsPerPage = 3; // set max rows per page
   let activeUsers = 0; // init index of users
   // @@ is this DANGEROUS ?
   // let pageLen = parseInt((activeUsers - 1) / maxRowsPerPage) + 1;
@@ -32,10 +32,11 @@ const Home = ({
   const [goToPage, setGoToPage] = useState('');
 
   const [actAttr, setActAttr] = useState(null);
-  const [sortOn, setSortOn] = useState(false); // click to sort, db click to unsort
+  const [sortType, setSortType] = useState(0); // click to sort, db click to unsort
   const [queryCur, setQueryCur] = useState(null); // store the query for search
 
   const [activePage, setActivePage] = useState(1);
+  // sortType: 1 for ascend, 2 for descend, 0 for default
   // if need remember page back, try redux
 
   const handleChange = e => {
@@ -69,7 +70,7 @@ const Home = ({
   };
 
   const handleSort = e => {
-    setSortOn(!sortOn);
+    setSortType((sortType + 1) % 3);
     setActAttr(e.target.id);
   };
 
@@ -159,21 +160,31 @@ const Home = ({
   };
 
   const handlePrevPage = e => {
+    console.log(activePage, 'prev');
     setActivePage(activePage - 1);
   };
 
   const handleNextPage = e => {
-    setActivePage(activePage + 1);
+    console.log(activePage, 'next');
+    setActivePage(activePage * 1 + 1); // sometimes 1+1 = 11
   };
 
   const handlePageChange = e => {
+    // console.log(activePage);
+    // console.log(e.target.innerText);
     setActivePage(e.target.innerText); // for button(btn dont have value)
   };
 
   const handlePageGoTo = e => {
     // console.log(e.target.tagName); // FORM
     e.preventDefault();
-    if (!isNaN(goToPage)) setActivePage(goToPage); // prevent invalid input
+    if (
+      !isNaN(goToPage) &&
+      goToPage <= parseInt((activeUsers - 1) / maxRowsPerPage) + 1
+    )
+      setActivePage(goToPage); // prevent invalid input
+    console.log(goToPage, 'goto');
+    console.log(activePage, 'act');
   };
 
   const setPagination = (pageLen, curPage) => {
@@ -242,7 +253,12 @@ const Home = ({
               </th>
             </thead>
             {(queryCur
-              ? (sortOn ? sortUserByAttr(users, actAttr) : users).filter(
+              ? (sortType === 1
+                  ? sortUserByAttr(users, actAttr)
+                  : sortType === 2
+                  ? [...sortUserByAttr(users, actAttr).reverse()]
+                  : users
+                ).filter(
                   user =>
                     user.firstname
                       .toLowerCase()
@@ -255,8 +271,10 @@ const Home = ({
                       .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
                     user.age.toString().indexOf(queryCur.toString()) !== -1
                 )
-              : sortOn
+              : sortType === 1
               ? sortUserByAttr(users, actAttr)
+              : sortType === 2
+              ? [...sortUserByAttr(users, actAttr).reverse()]
               : users
             )
               .map(user => {
@@ -317,25 +335,28 @@ const Home = ({
                 );
               } else {
                 return (
-                  <li>
-                    <button onClick={e => handlePageChange(e)}>{page}</button>
+                  <li
+                    key={page}
+                    className={
+                      page.toString() === activePage.toString()
+                        ? 'li-active'
+                        : 'li-disactive'
+                    }
+                  >
+                    <button
+                      style={
+                        page.toString() === activePage.toString()
+                          ? { background: 'red' }
+                          : {}
+                      }
+                      onClick={e => handlePageChange(e)}
+                    >
+                      {page}
+                    </button>
                   </li>
                 );
               }
             })}
-            {/* {activeUsers} and {parseInt((activeUsers - 1) / maxRowsPerPage) + 1} */}
-            {/* <li>
-              <button onClick={e => handlePageChange(e)}>1</button>
-            </li>
-            <li>
-              <button onClick={e => handlePageChange(e)}>2</button>
-            </li>
-            ...
-            <li>
-              <button onClick={e => handlePageChange(e)}>
-                {parseInt((activeUsers - 1) / maxRowsPerPage) + 1}
-              </button>
-            </li> */}
           </ul>
           <button
             onClick={e => handleNextPage()}
