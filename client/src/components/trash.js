@@ -210,3 +210,68 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(EditUser);
+
+//
+//
+//
+const setPagination = (pageLen, curPage) => {
+  // return Array for map: [1,2,'...',9 ]
+  // Logic here
+  const neighborLen = 1;
+  const actLen = 2 * neighborLen + 1; // in act page, then length of linked part
+  // [...Array(100).keys()] OR [...Array.from({ length: 100 }).keys()]
+  if (pageLen < actLen * 2) {
+    console.log('here', pageLen, actLen, activeUsers);
+    return [...Array.from({ length: actLen * 2 - 1 }, (v, k) => k + 1)];
+    // pageNum + 1, We will get: [1,2,3,4,5]
+  } else if (curPage < actLen + 1) {
+    // pageLen >= actLen * 2
+    // [1,2,3,'...',6]
+    return [...Array.from({ length: actLen }, (v, k) => k + 1), '...', pageLen];
+  } else if (curPage > pageLen - actLen) {
+    // [1, ... , 4, 5, 6]
+    return [
+      1,
+      '...',
+      ...Array.from({ length: actLen }, (v, k) => k + pageLen - actLen + 1)
+    ];
+  } else {
+    // [1, ... , 3,4,5, ..., 7]
+    return [
+      1,
+      '...',
+      ...Array.from({ length: actLen }, (v, k) => k + curPage - neighborLen),
+      '...',
+      pageLen
+    ];
+  }
+};
+
+//
+//
+//
+parseInt((activeUsers - 1) / maxRowsPerPage) + 1 < 2 * actLen
+  ? [...Array.from({ length: pageLen }, (v, k) => k + 1)]
+  : activePage < actLen + 1
+  ? [
+      ...Array.from({ length: actLen }, (v, k) => k + 1),
+      '...',
+      parseInt((activeUsers - 1) / maxRowsPerPage) + 1
+    ]
+  : activePage > parseInt((activeUsers - 1) / maxRowsPerPage) + 1 - actLen
+  ? [
+      1,
+      '...',
+      ...Array.from(
+        { length: actLen },
+        (v, k) =>
+          k + parseInt((activeUsers - 1) / maxRowsPerPage) + 1 - actLen + 1
+      )
+    ]
+  : [
+      1,
+      '...',
+      ...Array.from({ length: actLen }, (v, k) => k + activePage - neighborLen),
+      '...',
+      parseInt((activeUsers - 1) / maxRowsPerPage) + 1
+    ];

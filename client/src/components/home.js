@@ -17,11 +17,16 @@ const Home = ({
     initUser();
     initEdit();
     setUserList();
+    // setPagination(parseInt((activeUsers - 1) / maxRowsPerPage) + 1, activePage);
+    // console.log(setPagination(2, 1));
   }, []);
 
   const maxRowsPerPage = 10; // set max rows per page
   let activeUsers = 0; // init index of users
   // @@ is this DANGEROUS ?
+  // let pageLen = parseInt((activeUsers - 1) / maxRowsPerPage) + 1;
+  // const neighborLen = 1;
+  // const actLen = 2 * neighborLen + 1;
 
   const [query, setQuery] = useState('');
   const [goToPage, setGoToPage] = useState('');
@@ -42,7 +47,6 @@ const Home = ({
   };
 
   const handleSearch = e => {
-    // console.log(query);
     e.preventDefault();
     setQueryCur(query);
   };
@@ -62,7 +66,6 @@ const Home = ({
       setActivePage(activePage - 1);
     }
     // setDeleteId(id);
-    // console.log(id, 'del');
   };
 
   const handleSort = e => {
@@ -173,6 +176,43 @@ const Home = ({
     if (!isNaN(goToPage)) setActivePage(goToPage); // prevent invalid input
   };
 
+  const setPagination = (pageLen, curPage) => {
+    // return Array for map: [1,2,'...',9 ]
+    // Logic here
+    const neighborLen = 1;
+    const actLen = 2 * neighborLen + 1; // in act page, then length of linked part
+    // [...Array(100).keys()] OR [...Array.from({ length: 100 }).keys()]
+    if (pageLen < actLen * 2) {
+      // console.log('here', pageLen, actLen, activeUsers);
+      return [...Array.from({ length: pageLen }, (v, k) => k + 1)];
+      // pageNum + 1, We will get: [1,2,3,4,5]
+    } else if (curPage < actLen + 1) {
+      // pageLen >= actLen * 2
+      // [1,2,3,'...',6]
+      return [
+        ...Array.from({ length: actLen }, (v, k) => k + 1),
+        '...',
+        pageLen
+      ];
+    } else if (curPage > pageLen - actLen) {
+      // [1, ... , 4, 5, 6]
+      return [
+        1,
+        '...',
+        ...Array.from({ length: actLen }, (v, k) => k + pageLen - actLen + 1)
+      ];
+    } else {
+      // [1, ... , 3,4,5, ..., 7]
+      return [
+        1,
+        '...',
+        ...Array.from({ length: actLen }, (v, k) => k + curPage - neighborLen),
+        '...',
+        pageLen
+      ];
+    }
+  };
+
   return (
     <div>
       <div>
@@ -265,7 +305,26 @@ const Home = ({
             Prev Page
           </button>
           <ul style={{ display: 'flex', listStyle: 'none' }}>
-            <li>
+            {setPagination(
+              parseInt((activeUsers - 1) / maxRowsPerPage) + 1,
+              activePage
+            ).map(page => {
+              if (page === '...') {
+                return (
+                  <li>
+                    <div>...</div>
+                  </li>
+                );
+              } else {
+                return (
+                  <li>
+                    <button onClick={e => handlePageChange(e)}>{page}</button>
+                  </li>
+                );
+              }
+            })}
+            {/* {activeUsers} and {parseInt((activeUsers - 1) / maxRowsPerPage) + 1} */}
+            {/* <li>
               <button onClick={e => handlePageChange(e)}>1</button>
             </li>
             <li>
@@ -276,7 +335,7 @@ const Home = ({
               <button onClick={e => handlePageChange(e)}>
                 {parseInt((activeUsers - 1) / maxRowsPerPage) + 1}
               </button>
-            </li>
+            </li> */}
           </ul>
           <button
             onClick={e => handleNextPage()}
