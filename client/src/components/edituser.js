@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { editUser, initEdit } from '../redux/action-creators/users';
 import { setAlert } from '../redux/action-creators/alert';
+import Loading from './loading';
 import axios from 'axios';
 
 // const getUserById = id => dispatch => dispatch(getUser(id));
@@ -68,9 +69,7 @@ const EditUser = ({
       {editSuccess ? (
         <Redirect to='/' />
       ) : isLoading ? (
-        <div>
-          <h1>Loading</h1>
-        </div>
+        <Loading />
       ) : (
         <div>
           <div>

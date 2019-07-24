@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { setUserList } from '../redux/action-creators/users';
 import { connect } from 'react-redux';
 import { initUser, initEdit, deleteUser } from '../redux/action-creators/users';
+import Loading from './loading';
 
 const Home = ({
   users,
@@ -31,7 +32,7 @@ const Home = ({
   const [query, setQuery] = useState('');
   const [goToPage, setGoToPage] = useState('');
 
-  const [actAttr, setActAttr] = useState(null);
+  const [actAttr, setActAttr] = useState(null); // sort by which attribute
   const [sortType, setSortType] = useState(0); // click to sort, db click to unsort
   const [queryCur, setQueryCur] = useState(null); // store the query for search
 
@@ -236,9 +237,7 @@ const Home = ({
       </div>
       <div>
         {isLoading ? (
-          <div>
-            <h1>Loading</h1>
-          </div>
+          <Loading />
         ) : (
           <div>
             <table>

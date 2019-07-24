@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createUser, initUser } from '../redux/action-creators/users';
 import { setAlert } from '../redux/action-creators/alert';
+import Loading from './loading';
 
 const CreateUser = ({
   setAlert,
@@ -58,9 +59,7 @@ const CreateUser = ({
       {createSuccess ? (
         <Redirect to='/' />
       ) : isLoading ? (
-        <div>
-          <h1>Loading</h1>
-        </div>
+        <Loading />
       ) : (
         <div>
           <div>
