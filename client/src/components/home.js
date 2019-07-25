@@ -240,20 +240,20 @@ const Home = ({
           <Loading />
         ) : (
           <div>
-            <table>
-              <thead>
-                <th>Edit</th>
-                <th>Delete</th>
-                <th id='firstname' onClick={e => handleSort(e)}>
+            <table className='table table-sm'>
+              <thead className='thead-dark'>
+                <th scope='col'>Edit</th>
+                <th scope='col'>Delete</th>
+                <th scope='col' id='firstname' onClick={e => handleSort(e)}>
                   First Name
                 </th>
-                <th id='lastname' onClick={e => handleSort(e)}>
+                <th scope='col' id='lastname' onClick={e => handleSort(e)}>
                   Last Name
                 </th>
-                <th id='sex' onClick={e => handleSort(e)}>
+                <th scope='col' id='sex' onClick={e => handleSort(e)}>
                   Sex
                 </th>
-                <th id='age' onClick={e => handleSort(e)}>
+                <th scope='col' id='age' onClick={e => handleSort(e)}>
                   Age
                 </th>
               </thead>
@@ -304,19 +304,33 @@ const Home = ({
                     deleteIds.indexOf(user._id) === -1 && (
                       <tr className='user' key={user._id}>
                         <td>
-                          <button onClick={e => handleEdit(user._id)}>
+                          <button
+                            className='btn btn-outline-primary btn-sm'
+                            onClick={e => handleEdit(user._id)}
+                          >
                             Edit
                           </button>
                         </td>
                         <td>
-                          <button onClick={e => handleDelete(user._id)}>
+                          <button
+                            className='btn btn-outline-danger btn-sm'
+                            onClick={e => handleDelete(user._id)}
+                          >
                             Delete
                           </button>
                         </td>
-                        <td>{user.firstname}</td>
-                        <td>{user.lastname}</td>
-                        <td>{user.sex}</td>
-                        <td>{user.age}</td>
+                        <td>
+                          <div className='table-data'>{user.firstname}</div>
+                        </td>
+                        <td>
+                          <div className='table-data'>{user.lastname}</div>
+                        </td>
+                        <td>
+                          <div className='table-data'>{user.sex}</div>
+                        </td>
+                        <td>
+                          <div className='table-data'>{user.age}</div>
+                        </td>
                       </tr>
                     )
                   );
