@@ -40,7 +40,7 @@ const Home = ({
   // sortType: 1 for ascend, 2 for descend, 0 for default
   // if need remember page back, try redux
 
-  //render
+  //render part ********
   if (activeUsers === (activePage - 1) * maxRowsPerPage + 1) {
     // if it is this page's last user, after delete, back to prev page
     setActivePage(activePage - 1);
