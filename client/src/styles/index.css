@@ -13,8 +13,80 @@ code {
 }
 
 .table-data {
-  /* font-size: 18px; */
+  /* font-size: 22px; */
   position: relative;
-  top: 3px;
+  top: 10px;
   /* text-align: center; */
+}
+
+.page-bar {
+  width: 100%;
+}
+
+.page-list {
+  margin: 0 auto;
+  position: relative;
+  left: -5%;
+}
+
+.page-btn {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 3px;
+  padding-left: 9px;
+  padding-right: 9px;
+  border-radius: 6px;
+  font-weight: bolder;
+}
+
+.btn-row {
+  display: flex;
+  /* text-align: right; */
+}
+
+.btn-middle {
+  width: 85%;
+}
+
+.container {
+  position: relative;
+  /* top: 20px; */
+}
+
+.create {
+  position: relative;
+  margin: 10px;
+  font-weight: 800;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.btn {
+  display: flex;
+}
+
+.with-icon {
+  position: relative;
+  top: 7px;
+  margin-left: 3px;
+  margin-right: 1px;
+}
+
+.icon-text {
+  color: rgba(0, 0, 0, 0);
+  font-size: 8px;
+  visibility: hidden;
+}
+
+.btn-text {
+  white-space: nowrap;
+  position: relative;
+  /* top: 3px; */
+  margin: 5px;
+  font-size: 18px;
+}
+
+.loading {
+  margin: 0px auto;
+  position: relative;
+  /* top: 100px; */
+  width: 150px;
 }

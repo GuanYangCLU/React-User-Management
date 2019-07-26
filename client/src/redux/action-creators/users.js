@@ -165,7 +165,10 @@ export const deleteUser = id => dispatch => {
   // console.log('ido delete');
   axios
     .delete(`http://localhost:5000/api/users/${id}`)
-    .then(res => dispatch(deleteUserSuccess(res.data)))
+    .then(res => {
+      // console.log('after delete launched');
+      dispatch(deleteUserSuccess(res.data));
+    })
     .catch(err => dispatch(deleteUserError(err)));
 };
 

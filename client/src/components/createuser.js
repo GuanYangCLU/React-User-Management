@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createUser, initUser } from '../redux/action-creators/users';
 import { setAlert } from '../redux/action-creators/alert';
-import Loading from './loading';
+import Loading, { BackIcon, DoneIcon } from './loading';
 
 const CreateUser = ({
   setAlert,
@@ -62,77 +62,107 @@ const CreateUser = ({
         <Loading />
       ) : (
         <div>
-          <div>
+          <div className='create'>Create User</div>
+          <div className='container'>
             <form onSubmit={e => handleCreate(e)}>
-              <small>Blank with * is reuiqred</small>
-              <div>
+              <small className='form-text text-muted'>
+                Blank with * is reuiqred
+              </small>
+              <div className='form-group'>
                 * First Name:{' '}
                 <input
+                  className='form-control'
                   name='firstname'
                   value={firstname}
                   onChange={e => handleChange(e)}
                   placeholder='firstname'
                 />
               </div>
-              <div>
+              <div className='form-group'>
                 * Last Name:{' '}
                 <input
+                  className='form-control'
                   name='lastname'
                   value={lastname}
                   onChange={e => handleChange(e)}
                   placeholder='lastname'
                 />
               </div>
-              <div>
+              <div className='form-group'>
                 * Sex:{' '}
                 <input
+                  className='form-control'
                   name='sex'
                   value={sex}
                   onChange={e => handleChange(e)}
                   placeholder='sex'
                 />
               </div>
-              <div>
+              <div className='form-group'>
                 * Age:{' '}
                 <input
+                  className='form-control'
                   name='age'
                   value={age}
                   onChange={e => handleChange(e)}
                   placeholder='age'
                 />
               </div>
-              <div>
+              <div className='form-group'>
                 * Password:{' '}
                 <input
+                  className='form-control'
+                  type='password'
                   name='password'
                   value={password}
                   onChange={e => handleChange(e)}
                   placeholder='password'
                 />
               </div>
-              <div>
+              <div className='form-group'>
                 * Repet:{' '}
                 <input
+                  className='form-control'
+                  type='password'
                   name='repeat'
                   value={repeat}
                   onChange={e => handleChange(e)}
                   placeholder='repeat'
                 />
               </div>
-              <div>
-                <input
-                  value='Submit'
-                  type='submit'
-                  disabled={
-                    !(firstname && lastname && sex && age && password && repeat)
-                  }
-                />
+              <div className='btn-row'>
+                <div className='btn-left'>
+                  <button
+                    className='btn btn-success'
+                    // value='Submit'
+                    type='submit'
+                    disabled={
+                      !(
+                        firstname &&
+                        lastname &&
+                        sex &&
+                        age &&
+                        password &&
+                        repeat
+                      )
+                    }
+                  >
+                    <DoneIcon />
+                    <div className='btn-text'>Add User</div>
+                  </button>
+                </div>
+
+                <div className='btn-middle' />
+
+                <div className='btn-right'>
+                  <button className='btn btn-secondary' onClick={handleBack}>
+                    <BackIcon />
+                    <div className='btn-text'>Back</div>
+                  </button>
+                </div>
               </div>
             </form>
             <div>{alertContent}</div>
-          </div>
-          <div>
-            <button onClick={handleBack}>Back</button>
           </div>
         </div>
       )}

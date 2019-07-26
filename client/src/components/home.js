@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { setUserList } from '../redux/action-creators/users';
 import { connect } from 'react-redux';
 import { initUser, initEdit, deleteUser } from '../redux/action-creators/users';
-import Loading from './loading';
+import Loading, { EditIcon, DeleteIcon, UserIcon } from './loading';
 
 const Home = ({
   users,
@@ -22,7 +22,7 @@ const Home = ({
     // console.log(setPagination(2, 1));
   }, []);
 
-  const maxRowsPerPage = 10; // set max rows per page
+  const maxRowsPerPage = 7; // set max rows per page
   let activeUsers = 0; // init index of users
   // @@ is this DANGEROUS ?
   // let pageLen = parseInt((activeUsers - 1) / maxRowsPerPage) + 1;
@@ -40,6 +40,13 @@ const Home = ({
   // sortType: 1 for ascend, 2 for descend, 0 for default
   // if need remember page back, try redux
 
+  //render
+  if (activeUsers === (activePage - 1) * maxRowsPerPage + 1) {
+    // if it is this page's last user, after delete, back to prev page
+    setActivePage(activePage - 1);
+  }
+
+  //
   const handleChange = e => {
     if (e.target.id === 'search') {
       setQuery(e.target.value);
@@ -63,15 +70,22 @@ const Home = ({
 
   const handleDelete = id => {
     deleteUser(id);
-    if (activeUsers === (activePage - 1) * maxRowsPerPage + 1) {
-      // if it is this page's last user, after delete, back to prev page
-      setActivePage(activePage - 1);
-    }
+    // console.log('after delete user');
+    // if (activeUsers === (activePage - 1) * maxRowsPerPage + 1) {
+    //   // if it is this page's last user, after delete, back to prev page
+    //   setActivePage(activePage - 1);
+    // }
     // setDeleteId(id);
   };
 
   const handleSort = e => {
-    setSortType((sortType + 1) % 3);
+    if (e.target.id === actAttr) {
+      setSortType((sortType + 1) % 3);
+    } else {
+      setSortType(1);
+    }
+    // Clear the sort type from another attribute
+    // setSortType((sortType + 1) % 3);
     setActAttr(e.target.id);
   };
 
@@ -189,6 +203,14 @@ const Home = ({
     // console.log(activePage, 'act');
   };
 
+  const handleFirstPage = e => {
+    setActivePage(1);
+  };
+
+  const handleLastPage = e => {
+    setActivePage(parseInt((activeUsers - 1) / maxRowsPerPage) + 1);
+  };
+
   const setPagination = (pageLen, curPage) => {
     // return Array for map: [1,2,'...',9 ]
     // Logic here
@@ -228,121 +250,263 @@ const Home = ({
 
   return (
     <div>
-      <div>
-        <form onSubmit={e => handleSearch(e)}>
+      <nav className='navbar navbar-light bg-light'>
+        <a class='navbar-brand'>User List</a>
+
+        <form className='form-inline' onSubmit={e => handlePageGoTo(e)}>
+          Go to page:{' '}
+          <input
+            className='form-control mr-sm-2'
+            type='goto'
+            placeholder='Go to page'
+            aria-label='GoTo'
+            id='goto'
+            value={goToPage}
+            onChange={e => handleChange(e)}
+          />
+        </form>
+
+        <form className='form-inline' onSubmit={e => handleSearch(e)}>
           Search:{' '}
-          <input id='search' value={query} onChange={e => handleChange(e)} />
+          <input
+            className='form-control mr-sm-2'
+            type='search'
+            placeholder='Search'
+            aria-label='Search'
+            id='search'
+            value={query}
+            onChange={e => handleChange(e)}
+          />
           {/* <input type='submit' value='Search' /> */}
         </form>
-      </div>
+
+        {/* <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> */}
+
+        <button
+          className='btn btn-outline-success'
+          onClick={e => handleCreate()}
+        >
+          <UserIcon />
+          <div className='btn-text'>Create New User</div>
+        </button>
+      </nav>
       <div>
         {isLoading ? (
           <Loading />
         ) : (
           <div>
-            <table className='table table-sm'>
-              <thead className='thead-dark'>
-                <th scope='col'>Edit</th>
-                <th scope='col'>Delete</th>
-                <th scope='col' id='firstname' onClick={e => handleSort(e)}>
-                  First Name
-                </th>
-                <th scope='col' id='lastname' onClick={e => handleSort(e)}>
-                  Last Name
-                </th>
-                <th scope='col' id='sex' onClick={e => handleSort(e)}>
-                  Sex
-                </th>
-                <th scope='col' id='age' onClick={e => handleSort(e)}>
-                  Age
-                </th>
-              </thead>
-              {(queryCur
-                ? (sortType === 1
-                    ? sortUserByAttr(users, actAttr)
-                    : sortType === 2
-                    ? [...sortUserByAttr(users, actAttr).reverse()]
-                    : users
-                  ).filter(
-                    user =>
-                      user.firstname
-                        .toLowerCase()
-                        .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
-                      user.lastname
-                        .toLowerCase()
-                        .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
-                      user.sex
-                        .toLowerCase()
-                        .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
-                      user.age.toString().indexOf(queryCur.toString()) !== -1
-                  )
-                : sortType === 1
-                ? sortUserByAttr(users, actAttr)
-                : sortType === 2
-                ? [...sortUserByAttr(users, actAttr).reverse()]
-                : users
-              )
-                .map(user => {
-                  if (deleteIds.indexOf(user._id) === -1) {
-                    return {
-                      ...user,
-                      index: activeUsers++
-                    };
-                  } else {
-                    return null; // id in deleteId list
-                  }
-                })
-                .filter(user => user) // user exists
-                .filter(
-                  user =>
-                    (activePage - 1) * maxRowsPerPage <= user.index &&
-                    activePage * maxRowsPerPage > user.index
-                )
-                .map(user => {
-                  return (
-                    !isLoading &&
-                    deleteIds.indexOf(user._id) === -1 && (
-                      <tr className='user' key={user._id}>
-                        <td>
-                          <button
-                            className='btn btn-outline-primary btn-sm'
-                            onClick={e => handleEdit(user._id)}
-                          >
-                            Edit
-                          </button>
-                        </td>
-                        <td>
-                          <button
-                            className='btn btn-outline-danger btn-sm'
-                            onClick={e => handleDelete(user._id)}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                        <td>
-                          <div className='table-data'>{user.firstname}</div>
-                        </td>
-                        <td>
-                          <div className='table-data'>{user.lastname}</div>
-                        </td>
-                        <td>
-                          <div className='table-data'>{user.sex}</div>
-                        </td>
-                        <td>
-                          <div className='table-data'>{user.age}</div>
-                        </td>
-                      </tr>
+            <div>
+              <table className='table table-sm'>
+                <thead className='thead-dark'>
+                  <th scope='col'>Edit</th>
+                  <th scope='col'>Delete</th>
+                  <th scope='col' id='firstname' onClick={e => handleSort(e)}>
+                    First Name
+                  </th>
+                  <th scope='col' id='lastname' onClick={e => handleSort(e)}>
+                    Last Name
+                  </th>
+                  <th scope='col' id='sex' onClick={e => handleSort(e)}>
+                    Sex
+                  </th>
+                  <th scope='col' id='age' onClick={e => handleSort(e)}>
+                    Age
+                  </th>
+                </thead>
+                {(queryCur
+                  ? (sortType === 1
+                      ? sortUserByAttr(users, actAttr)
+                      : sortType === 2
+                      ? [...sortUserByAttr(users, actAttr).reverse()]
+                      : users
+                    ).filter(
+                      user =>
+                        user.firstname
+                          .toLowerCase()
+                          .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
+                        user.lastname
+                          .toLowerCase()
+                          .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
+                        user.sex
+                          .toLowerCase()
+                          .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
+                        user.age.toString().indexOf(queryCur.toString()) !== -1
                     )
-                  );
+                  : sortType === 1
+                  ? sortUserByAttr(users, actAttr)
+                  : sortType === 2
+                  ? [...sortUserByAttr(users, actAttr).reverse()]
+                  : users
+                )
+                  .map(user => {
+                    if (deleteIds.indexOf(user._id) === -1) {
+                      return {
+                        ...user,
+                        index: activeUsers++
+                      };
+                    } else {
+                      return null; // id in deleteId list
+                    }
+                  })
+                  .filter(user => user) // user exists
+                  .filter(
+                    user =>
+                      (activePage - 1) * maxRowsPerPage <= user.index &&
+                      activePage * maxRowsPerPage > user.index
+                  )
+                  .map(user => {
+                    return (
+                      !isLoading &&
+                      deleteIds.indexOf(user._id) === -1 && (
+                        <tr className='user' key={user._id}>
+                          <td>
+                            {/* <i className='fas fa-pen' /> */}
+                            {/* <button className='btn btn-light btn-sm'> */}
+                            <button
+                              className='btn btn-outline-primary btn-sm'
+                              onClick={e => handleEdit(user._id)}
+                            >
+                              <EditIcon />
+                              <div className='btn-text'>Edit</div>
+                            </button>
+                            {/* </button> */}
+                          </td>
+                          <td>
+                            <button
+                              className='btn btn-outline-danger btn-sm'
+                              onClick={e => handleDelete(user._id)}
+                            >
+                              <DeleteIcon />
+                              <div className='btn-text'>Delete</div>
+                            </button>
+                          </td>
+                          <td>
+                            <div className='table-data'>{user.firstname}</div>
+                          </td>
+                          <td>
+                            <div className='table-data'>{user.lastname}</div>
+                          </td>
+                          <td>
+                            <div className='table-data'>{user.sex}</div>
+                          </td>
+                          <td>
+                            <div className='table-data'>{user.age}</div>
+                          </td>
+                        </tr>
+                      )
+                    );
+                  })}
+              </table>
+            </div>
+            <div className='page-bar' style={{ display: 'flex' }}>
+              <ul
+                className='page-list'
+                style={{ display: 'flex', listStyle: 'none' }}
+              >
+                <li>
+                  <button
+                    className='page-btn'
+                    onClick={e => handleFirstPage()}
+                    disabled={activePage < 2}
+                  >
+                    {'<<'}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className='page-btn'
+                    onClick={e => handlePrevPage()}
+                    disabled={activePage < 2}
+                  >
+                    {'<'}
+                  </button>
+                </li>
+                {setPagination(
+                  parseInt((activeUsers - 1) / maxRowsPerPage) + 1,
+                  activePage
+                ).map(page => {
+                  if (page === '...') {
+                    return (
+                      <li>
+                        <div>...</div>
+                      </li>
+                    );
+                  } else {
+                    return (
+                      <li
+                        key={page}
+                        className={
+                          page.toString() === activePage.toString()
+                            ? 'li-active'
+                            : 'li-disactive'
+                        }
+                      >
+                        <button
+                          className='page-btn'
+                          style={
+                            page.toString() === activePage.toString()
+                              ? { background: 'cyan' }
+                              : {}
+                          }
+                          onClick={e => handlePageChange(e)}
+                        >
+                          {page}
+                        </button>
+                      </li>
+                    );
+                  }
                 })}
-            </table>
+                <li>
+                  <button
+                    className='page-btn'
+                    onClick={e => handleNextPage()}
+                    disabled={
+                      activePage > parseInt((activeUsers - 1) / maxRowsPerPage)
+                    }
+                  >
+                    {'>'}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className='page-btn'
+                    onClick={e => handleLastPage()}
+                    disabled={
+                      activePage > parseInt((activeUsers - 1) / maxRowsPerPage)
+                    }
+                  >
+                    {'>>'}
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         )}
-        <div style={{ display: 'flex' }}>
-          <button onClick={e => handlePrevPage()} disabled={activePage < 2}>
-            Prev Page
-          </button>
-          <ul style={{ display: 'flex', listStyle: 'none' }}>
+
+        {/* origin create button position */}
+        {/* <div className='page-bar' style={{ display: 'flex' }}>
+          <ul
+            className='page-list'
+            style={{ display: 'flex', listStyle: 'none' }}
+          >
+            <li>
+              <button
+                className='page-btn'
+                onClick={e => handleFirstPage()}
+                disabled={activePage < 2}
+              >
+                {'<<'}
+              </button>
+            </li>
+            <li>
+              <button
+                className='page-btn'
+                onClick={e => handlePrevPage()}
+                disabled={activePage < 2}
+              >
+                {'<'}
+              </button>
+            </li>
             {setPagination(
               parseInt((activeUsers - 1) / maxRowsPerPage) + 1,
               activePage
@@ -364,9 +528,10 @@ const Home = ({
                     }
                   >
                     <button
+                      className='page-btn'
                       style={
                         page.toString() === activePage.toString()
-                          ? { background: 'red' }
+                          ? { background: 'cyan' }
                           : {}
                       }
                       onClick={e => handlePageChange(e)}
@@ -377,23 +542,30 @@ const Home = ({
                 );
               }
             })}
+            <li>
+              <button
+                className='page-btn'
+                onClick={e => handleNextPage()}
+                disabled={
+                  activePage > parseInt((activeUsers - 1) / maxRowsPerPage)
+                }
+              >
+                {'>'}
+              </button>
+            </li>
+            <li>
+              <button
+                className='page-btn'
+                onClick={e => handleLastPage()}
+                disabled={
+                  activePage > parseInt((activeUsers - 1) / maxRowsPerPage)
+                }
+              >
+                {'>>'}
+              </button>
+            </li>
           </ul>
-          <button
-            onClick={e => handleNextPage()}
-            disabled={activePage > parseInt((activeUsers - 1) / maxRowsPerPage)}
-          >
-            Next Page
-          </button>
-        </div>
-        <div>
-          <form onSubmit={e => handlePageGoTo(e)}>
-            Go to page:{' '}
-            <input id='goto' value={goToPage} onChange={e => handleChange(e)} />
-          </form>
-        </div>
-      </div>
-      <div>
-        <button onClick={e => handleCreate()}>Create New User</button>
+        </div> */}
       </div>
     </div>
   );
