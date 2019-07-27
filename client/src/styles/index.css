@@ -14,8 +14,8 @@ code {
 
 .table-data {
   /* font-size: 22px; */
-  position: relative;
-  top: 10px;
+  /* position: relative; */
+  /* top: 10px; */
   /* text-align: center; */
 }
 
@@ -61,9 +61,13 @@ code {
 
 .btn {
   display: flex;
+  white-space: nowrap;
 }
 
-.with-icon {
+.alert-text {
+  color: crimson;
+}
+/* .with-icon {
   position: relative;
   top: 7px;
   margin-left: 3px;
@@ -79,14 +83,26 @@ code {
 .btn-text {
   white-space: nowrap;
   position: relative;
-  /* top: 3px; */
+  top: 3px;
   margin: 5px;
   font-size: 18px;
-}
+} */
 
 .loading {
   margin: 0px auto;
   position: relative;
   /* top: 100px; */
   width: 150px;
+}
+
+.fas {
+  position: relative;
+  top: 5px;
+  margin-right: 5px;
+}
+
+.sort {
+  position: relative;
+  top: 0;
+  margin-right: 0;
 }

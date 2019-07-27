@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+// import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { editUser, initEdit } from '../redux/action-creators/users';
+import { getUser } from '../redux/action-creators/users';
 import { setAlert } from '../redux/action-creators/alert';
-import Loading, { BackIcon, DoneIcon } from './loading';
+import Loading from './loading';
 import axios from 'axios';
-
-// const getUserById = id => dispatch => dispatch(getUser(id));
 
 const EditUser = ({
   setAlert,
@@ -15,60 +14,82 @@ const EditUser = ({
   history,
   editSuccess,
   match,
-  isLoading
+  isLoading,
+  initEdit,
+  getUser,
+  user
 }) => {
   const id = match.params.userId;
 
   const [userData, setUserData] = useState({
-    firstname: null,
-    lastname: null,
-    sex: null,
-    age: null,
-    password: null,
-    repeat: null
+    firstname: '',
+    lastname: '',
+    sex: '',
+    age: '',
+    password: '',
+    repeat: ''
   });
 
+  // const getUserById = (id, setUserData) => {
+  //   axios
+  //     .get(`http://localhost:5000/api/users/${id}`)
+  //     .then(res => {
+  //       setUserData({
+  //         ...userData,
+  //         firstname: res.data.firstname,
+  //         lastname: res.data.lastname,
+  //         sex: res.data.sex,
+  //         age: res.data.age
+  //       });
+  //     })
+  //     .catch(err => setAlert(err));
+  // };
+
+  // const cbGetUserById = useCallback((id, getUserById, setUserData) => {
+  //   getUserById(id, setUserData);
+  // }, id);
+
   useEffect(() => {
-    // initEdit(); // may not need any more
-    axios
-      .get(`http://localhost:5000/api/users/${id}`)
-      .then(res => {
-        setUserData({
-          ...userData,
-          firstname: res.data.firstname,
-          lastname: res.data.lastname,
-          sex: res.data.sex,
-          age: res.data.age
-        });
-      })
-      .catch(err => setAlert(err));
-    // we cannot use loacl state to redux as a prop here
+    getUser(id, setUserData);
+    // setUserData({ ...user });
+    // getUserById(id, setUserData);
   }, []);
 
   const { firstname, lastname, sex, age, password, repeat } = userData;
+
+  const handleChange = e => {
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+  };
 
   const handleEdit = e => {
     e.preventDefault();
     if (password !== repeat) {
       setAlert('Password does not match!');
     } else {
-      editUser({ id, firstname, lastname, sex, age, password });
+      editUser(
+        { id, firstname, lastname, sex, age, password },
+        history,
+        initEdit
+      );
     }
-  };
-
-  const handleChange = e => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
   const handleBack = () => {
     history.push('/');
   };
 
+  // in render it can do, but not recommand
+  // if (editSuccess) {
+  //   initEdit();
+  //   history.push('/');
+  // }
+
   return (
     <div>
-      {editSuccess ? (
-        <Redirect to='/' />
-      ) : isLoading ? (
+      {//   editSuccess ? (
+      //   <Redirect to='/' />
+      // ) :
+      isLoading ? (
         <Loading />
       ) : (
         <div>
@@ -130,7 +151,7 @@ const EditUser = ({
                 />
               </div>
               <div className='form-group'>
-                * Repet:{' '}
+                * Repeat:{' '}
                 <input
                   className='form-control'
                   type='password'
@@ -153,25 +174,28 @@ const EditUser = ({
                         sex &&
                         age &&
                         password &&
-                        repeat
-                      )
+                        repeat &&
+                        password === repeat
+                      ) ||
+                      (user.firstname === firstname &&
+                        user.lastname === lastname &&
+                        user.sex === sex &&
+                        user.age === age)
                     }
                   >
-                    <DoneIcon />
-                    <div className='btn-text'>Save Changes</div>
+                    <i className='fas fa-arrow-down' /> Save Changes
                   </button>
                 </div>
                 <div className='btn-middle' />
 
                 <div className='btn-right'>
                   <button className='btn btn-secondary' onClick={handleBack}>
-                    <BackIcon />
-                    <div className='btn-text'>Back</div>
+                    <i className='fas fa-arrow-left' /> Back
                   </button>
                 </div>
               </div>
             </form>
-            <div>{alertContent}</div>
+            <div className='alert-text'>{alertContent}</div>
           </div>
         </div>
       )}
@@ -183,15 +207,17 @@ const mapStateToProps = state => {
   return {
     alertContent: state.alert.alertContent,
     editSuccess: state.editUser.editSuccess,
-    isLoading: state.editUser.isLoading
+    isLoading: state.editUser.isLoading,
+    user: state.getUser.user
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     setAlert: alert => dispatch(setAlert(alert)),
-    editUser: data => dispatch(editUser(data)),
-    initEdit: () => dispatch(initEdit())
+    editUser: (data, history) => dispatch(editUser(data, history)),
+    initEdit: () => dispatch(initEdit()),
+    getUser: (id, setUserData) => dispatch(getUser(id, setUserData))
   };
 };
 

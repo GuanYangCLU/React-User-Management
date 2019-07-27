@@ -106,7 +106,7 @@ const editUserError = err => {
   };
 };
 
-export const editUser = userData => dispatch => {
+export const editUser = (userData, history, initEdit) => dispatch => {
   dispatch(editUserStart());
   const config = {
     headers: {
@@ -115,7 +115,12 @@ export const editUser = userData => dispatch => {
   };
   axios
     .put(`http://localhost:5000/api/users/${userData.id}`, userData, config)
-    .then(res => dispatch(editUserSuccess(res.data)))
+    .then(res => {
+      dispatch(editUserSuccess(res.data));
+      // other method:
+      history.push('/');
+      initEdit();
+    })
     .catch(err => dispatch(editUserError(err)));
 };
 
@@ -126,11 +131,11 @@ export const initEdit = () => dispatch => {
   dispatch({
     type: 'INIT_EDIT',
     payload: {
-      firstname: null,
-      lastname: null,
-      sex: null,
-      age: null,
-      password: null,
+      firstname: '',
+      lastname: '',
+      sex: '',
+      age: '',
+      password: '',
       editSuccess: false
     }
   });
@@ -162,11 +167,9 @@ const deleteUserError = err => {
 
 export const deleteUser = id => dispatch => {
   dispatch(deleteUserStart());
-  // console.log('ido delete');
   axios
     .delete(`http://localhost:5000/api/users/${id}`)
     .then(res => {
-      // console.log('after delete launched');
       dispatch(deleteUserSuccess(res.data));
     })
     .catch(err => dispatch(deleteUserError(err)));
@@ -180,3 +183,40 @@ export const deleteUser = id => dispatch => {
 //     }
 //   });
 // };
+
+// --------
+
+const getUserStart = () => {
+  return {
+    type: 'GET_USER_START',
+    payload: {}
+  };
+};
+
+const getUserSuccess = userData => {
+  // console.log(userData);
+  return {
+    type: 'GET_USER_SUCCESS',
+    payload: { user: userData }
+  };
+};
+
+const getUserError = err => {
+  return {
+    type: 'GET_USER_ERROR',
+    payload: { error: err }
+  };
+};
+
+export const getUser = (id, setUserData) => dispatch => {
+  dispatch(getUserStart());
+  axios
+    .get(`http://localhost:5000/api/users/${id}`)
+    .then(res => {
+      const { firstname, lastname, sex, age } = res.data;
+      const userData = { firstname, lastname, sex, age };
+      dispatch(getUserSuccess(userData));
+      setUserData(userData);
+    })
+    .catch(err => dispatch(getUserError(err)));
+};

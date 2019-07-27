@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createUser, initUser } from '../redux/action-creators/users';
 import { setAlert } from '../redux/action-creators/alert';
-import Loading, { BackIcon, DoneIcon } from './loading';
+import Loading, { Alert } from './loading';
 
 const CreateUser = ({
   setAlert,
@@ -16,12 +16,12 @@ const CreateUser = ({
   // useEffect(() => initUser(), []); // may not need anymore
 
   const [userData, setUserData] = useState({
-    firstname: null,
-    lastname: null,
-    sex: null,
-    age: null,
-    password: null,
-    repeat: null
+    firstname: '',
+    lastname: '',
+    sex: '',
+    age: '',
+    password: '',
+    repeat: ''
   });
 
   const { firstname, lastname, sex, age, password, repeat } = userData;
@@ -77,6 +77,7 @@ const CreateUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='firstname'
                 />
+                {!firstname && <Alert warning='empty' item='firstname' />}
               </div>
               <div className='form-group'>
                 * Last Name:{' '}
@@ -120,7 +121,7 @@ const CreateUser = ({
                 />
               </div>
               <div className='form-group'>
-                * Repet:{' '}
+                * Repeat:{' '}
                 <input
                   className='form-control'
                   type='password'
@@ -143,12 +144,12 @@ const CreateUser = ({
                         sex &&
                         age &&
                         password &&
-                        repeat
+                        repeat &&
+                        password === repeat
                       )
                     }
                   >
-                    <DoneIcon />
-                    <div className='btn-text'>Add User</div>
+                    <i className='fas fa-arrow-down' /> Add User
                   </button>
                 </div>
 
@@ -156,13 +157,12 @@ const CreateUser = ({
 
                 <div className='btn-right'>
                   <button className='btn btn-secondary' onClick={handleBack}>
-                    <BackIcon />
-                    <div className='btn-text'>Back</div>
+                    <i className='fas fa-arrow-left' /> Back
                   </button>
                 </div>
               </div>
             </form>
-            <div>{alertContent}</div>
+            <div className='alert-text'>{alertContent}</div>
           </div>
         </div>
       )}
@@ -181,6 +181,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     setAlert: alert => dispatch(setAlert(alert)),
+
     createUser: data => dispatch(createUser(data)),
     initUser: () => dispatch(initUser())
   };
