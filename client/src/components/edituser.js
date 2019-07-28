@@ -72,7 +72,7 @@ const EditUser = ({
         { id, firstname, lastname, sex, age, password },
         history,
         initEdit
-      );
+      ); // pass init and push into action-creator and let it exec
     }
   };
 

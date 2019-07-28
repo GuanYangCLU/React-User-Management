@@ -11,8 +11,7 @@ const Home = ({
   initUser,
   // initEdit,
   deleteUser,
-  isLoading,
-  isDeleting
+  isLoading
 }) => {
   useEffect(() => {
     initUser();
@@ -21,8 +20,6 @@ const Home = ({
   }, []); //initUser, initEdit, setUserList
 
   const maxRowsPerPage = 10; // set max rows per page
-  // let users.length = 0; // init index of users
-  // @@ is this DANGEROUS ?
 
   // state part ******
   const [query, setQuery] = useState('');
@@ -38,6 +35,8 @@ const Home = ({
   // if need remember page back, try redux
 
   // function define part *****
+
+  // handle functions, process logic and actions
   const handleChange = e => {
     if (e.target.id === 'search') {
       setQuery(e.target.value);
@@ -61,7 +60,6 @@ const Home = ({
 
   const handleDelete = id => {
     deleteUser(id);
-
     // setDeleteId(id);
   };
 
@@ -168,9 +166,11 @@ const Home = ({
     setActivePage(activePage * 1 + 1); // sometimes 1+1 = 11
   };
 
-  const handlePageChange = e => {
+  const handlePageChange = (e, page) => {
     // console.log(e.target.innerText);
-    setActivePage(e.target.innerText); // for button(btn dont have value)
+    // setActivePage(e.target.innerText);
+    // for button(btn dont have value), but don't recommend use innerText
+    setActivePage(page); // for button(btn dont have value)
   };
 
   const handleFirstPage = e => {
@@ -194,6 +194,7 @@ const Home = ({
     // console.log(activePage, 'act');
   };
 
+  // Expressive functions, show how to display
   const setPagination = (pageLen, curPage) => {
     // curPage: careful string to int
     // return Array for map: [1,2,'...',9 ]
@@ -246,6 +247,19 @@ const Home = ({
     );
   };
 
+  const searchUser = (user, queryCur) => {
+    return (
+      user.firstname
+        .toLowerCase()
+        .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
+      user.lastname.toLowerCase().indexOf(queryCur.toString().toLowerCase()) !==
+        -1 ||
+      user.sex.toLowerCase().indexOf(queryCur.toString().toLowerCase()) !==
+        -1 ||
+      user.age.toString().indexOf(queryCur.toString()) !== -1
+    );
+  };
+
   //render part ********
   if (users.length > 0 && users.length === (activePage - 1) * maxRowsPerPage) {
     // if it is this page's last user, after delete, back to prev page
@@ -295,7 +309,7 @@ const Home = ({
         </button>
       </nav>
       <div>
-        {isLoading || isDeleting ? (
+        {isLoading ? (
           <Loading />
         ) : (
           <div>
@@ -327,48 +341,19 @@ const Home = ({
                         : sortType === 2
                         ? [...sortUserByAttr(users, actAttr).reverse()]
                         : users
-                      ).filter(
-                        user =>
-                          user.firstname
-                            .toLowerCase()
-                            .indexOf(queryCur.toString().toLowerCase()) !==
-                            -1 ||
-                          user.lastname
-                            .toLowerCase()
-                            .indexOf(queryCur.toString().toLowerCase()) !==
-                            -1 ||
-                          user.sex
-                            .toLowerCase()
-                            .indexOf(queryCur.toString().toLowerCase()) !==
-                            -1 ||
-                          user.age.toString().indexOf(queryCur.toString()) !==
-                            -1
-                      )
+                      ).filter(user => searchUser(user, queryCur))
                     : sortType === 1
                     ? sortUserByAttr(users, actAttr)
                     : sortType === 2
                     ? [...sortUserByAttr(users, actAttr).reverse()]
                     : users
                   )
-                    // .map(user => {
-                    //   if (deleteIds.indexOf(user._id) === -1) {
-                    //     return {
-                    //       ...user,
-                    //       index: activeUsers++
-                    //     };
-                    //   } else {
-                    //     return null; // id in deleteId list
-                    //   }
-                    // })
-                    // .filter(user => user) // user exists
                     .slice(
                       (activePage - 1) * maxRowsPerPage,
                       activePage * maxRowsPerPage
                     )
                     .map(user => {
                       return (
-                        // !isDeleting &&
-                        // deleteIds.indexOf(user._id) === -1 && (
                         <tr className='user' key={user._id}>
                           <td>
                             <button
@@ -400,11 +385,10 @@ const Home = ({
                           </td>
                         </tr>
                       );
-                      // );
                     })}
                 </tbody>
               </table>
-              <div>{users.length}</div>
+              {/* <div>{users.length}</div> */}
             </div>
 
             {/* Pagination Bar */}
@@ -440,22 +424,16 @@ const Home = ({
                     );
                   } else {
                     return (
-                      <li
-                        key={page}
-                        className={
-                          page.toString() === activePage.toString()
-                            ? 'li-active'
-                            : 'li-disactive'
-                        }
-                      >
+                      <li key={page}>
                         <button
-                          className='page-btn'
-                          style={
-                            page.toString() === activePage.toString()
-                              ? { background: 'cyan' }
-                              : {}
+                          // className='page-btn'
+                          className={
+                            'page-btn ' +
+                            (page.toString() === activePage.toString()
+                              ? 'btn-active'
+                              : 'btn-disactive')
                           }
-                          onClick={e => handlePageChange(e)}
+                          onClick={e => handlePageChange(e, page)}
                         >
                           {page}
                         </button>
@@ -497,9 +475,7 @@ const Home = ({
 const mapStateToProps = state => {
   return {
     users: state.users.users,
-    deleteIds: state.users.deleteIds,
     isLoading: state.users.isLoading
-    // isDeleting: state.deleteUser.isLoading
   };
 };
 

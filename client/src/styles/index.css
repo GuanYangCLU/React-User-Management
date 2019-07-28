@@ -76,6 +76,15 @@ code {
   display: flex;
   list-style: none;
 }
+
+.btn-active {
+  background: cyan;
+}
+
+.btn-disactive {
+  /* background: cyan; */
+}
+
 /* .with-icon {
   position: relative;
   top: 7px;
