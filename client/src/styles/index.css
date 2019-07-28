@@ -67,6 +67,15 @@ code {
 .alert-text {
   color: crimson;
 }
+
+.page-bar {
+  display: flex;
+}
+
+.page-list {
+  display: flex;
+  list-style: none;
+}
 /* .with-icon {
   position: relative;
   top: 7px;

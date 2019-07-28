@@ -9,9 +9,8 @@ const Home = ({
   setUserList,
   history,
   initUser,
-  initEdit,
+  // initEdit,
   deleteUser,
-  deleteIds,
   isLoading,
   isDeleting
 }) => {
@@ -21,8 +20,8 @@ const Home = ({
     setUserList();
   }, []); //initUser, initEdit, setUserList
 
-  const maxRowsPerPage = 20; // set max rows per page
-  let activeUsers = 0; // init index of users
+  const maxRowsPerPage = 10; // set max rows per page
+  // let users.length = 0; // init index of users
   // @@ is this DANGEROUS ?
 
   // state part ******
@@ -35,7 +34,6 @@ const Home = ({
 
   const [activePage, setActivePage] = useState(1);
 
-  // const [test, setTest] = useState(users.length);
   // sortType: 1 for ascend, 2 for descend, 0 for default
   // if need remember page back, try redux
 
@@ -63,6 +61,7 @@ const Home = ({
 
   const handleDelete = id => {
     deleteUser(id);
+
     // setDeleteId(id);
   };
 
@@ -179,7 +178,7 @@ const Home = ({
   };
 
   const handleLastPage = e => {
-    setActivePage(parseInt((activeUsers - 1) / maxRowsPerPage) + 1);
+    setActivePage(parseInt((users.length - 1) / maxRowsPerPage) + 1);
   };
 
   const handlePageGoTo = e => {
@@ -187,22 +186,23 @@ const Home = ({
     e.preventDefault();
     if (
       !isNaN(goToPage) &&
-      goToPage > 0 &&
-      goToPage <= parseInt((activeUsers - 1) / maxRowsPerPage) + 1
+      goToPage >= 1 &&
+      goToPage <= parseInt((users.length - 1) / maxRowsPerPage) + 1
     )
-      setActivePage(goToPage); // prevent invalid input
-    // console.log(goToPage, 'goto');
+      setActivePage(parseInt(goToPage)); // prevent invalid input
+    // in case decimal: 1.2, 2.6, ...
     // console.log(activePage, 'act');
   };
 
   const setPagination = (pageLen, curPage) => {
+    // curPage: careful string to int
     // return Array for map: [1,2,'...',9 ]
     // Logic here
     const neighborLen = 1;
     const actLen = 2 * neighborLen + 1; // in act page, then length of linked part
     // [...Array(100).keys()] OR [...Array.from({ length: 100 }).keys()]
     if (pageLen < actLen * 2) {
-      // console.log('here', pageLen, actLen, activeUsers);
+      // console.log('here', pageLen, actLen, users.length);
       return [...Array.from({ length: pageLen }, (v, k) => k + 1)];
       // pageNum + 1, We will get: [1,2,3,4,5]
     } else if (curPage < actLen + 1) {
@@ -225,7 +225,10 @@ const Home = ({
       return [
         1,
         '...',
-        ...Array.from({ length: actLen }, (v, k) => k + curPage - neighborLen),
+        ...Array.from(
+          { length: actLen },
+          (v, k) => k + curPage * 1 - neighborLen
+        ),
         '...',
         pageLen
       ];
@@ -244,8 +247,9 @@ const Home = ({
   };
 
   //render part ********
-  if (activeUsers === (activePage - 1) * maxRowsPerPage + 1) {
+  if (users.length > 0 && users.length === (activePage - 1) * maxRowsPerPage) {
     // if it is this page's last user, after delete, back to prev page
+    // empty list stay in 1st page
     setActivePage(activePage - 1);
   }
 
@@ -357,11 +361,10 @@ const Home = ({
                     //   }
                     // })
                     // .filter(user => user) // user exists
-                    // .filter(
-                    //   user =>
-                    //     (activePage - 1) * maxRowsPerPage <= user.index &&
-                    //     activePage * maxRowsPerPage > user.index
-                    // )
+                    .slice(
+                      (activePage - 1) * maxRowsPerPage,
+                      activePage * maxRowsPerPage
+                    )
                     .map(user => {
                       return (
                         // !isDeleting &&
@@ -405,11 +408,8 @@ const Home = ({
             </div>
 
             {/* Pagination Bar */}
-            <div className='page-bar' style={{ display: 'flex' }}>
-              <ul
-                className='page-list'
-                style={{ display: 'flex', listStyle: 'none' }}
-              >
+            <div className='page-bar'>
+              <ul className='page-list'>
                 <li>
                   <button
                     className='page-btn'
@@ -429,7 +429,7 @@ const Home = ({
                   </button>
                 </li>
                 {setPagination(
-                  parseInt((activeUsers - 1) / maxRowsPerPage) + 1,
+                  parseInt((users.length - 1) / maxRowsPerPage) + 1,
                   activePage
                 ).map(page => {
                   if (page === '...') {
@@ -468,7 +468,7 @@ const Home = ({
                     className='page-btn'
                     onClick={e => handleNextPage()}
                     disabled={
-                      activePage > parseInt((activeUsers - 1) / maxRowsPerPage)
+                      activePage > parseInt((users.length - 1) / maxRowsPerPage)
                     }
                   >
                     {'>'}
@@ -479,7 +479,7 @@ const Home = ({
                     className='page-btn'
                     onClick={e => handleLastPage()}
                     disabled={
-                      activePage > parseInt((activeUsers - 1) / maxRowsPerPage)
+                      activePage > parseInt((users.length - 1) / maxRowsPerPage)
                     }
                   >
                     {'>>'}

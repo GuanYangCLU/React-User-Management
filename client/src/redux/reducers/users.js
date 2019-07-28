@@ -22,6 +22,7 @@ const users = (state = initState, action) => {
     //   // console.log(payload._id, ' in reducer');
     //   // console.log(users); // this users is THIS REDUCER ITSELF, NOT the array
     //   // totally wrong, users.filter return undefined
+    //  // either pass users in payload or make another http call to get list
     //   return {
     //     ...state,
     //     users: [...users.filter(user => user._id !== payload._id)],
