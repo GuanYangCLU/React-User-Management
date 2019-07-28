@@ -62,7 +62,7 @@ const Home = ({
   };
 
   const handleDelete = id => {
-    deleteUser(id, history);
+    deleteUser(id);
     // setDeleteId(id);
   };
 
@@ -508,7 +508,7 @@ const mapStateToDispatch = dispatch => {
     setUserList: () => dispatch(setUserList()),
     initUser: () => dispatch(initUser()),
     initEdit: () => dispatch(initEdit()),
-    deleteUser: (id, history) => dispatch(deleteUser(id, history))
+    deleteUser: id => dispatch(deleteUser(id))
   };
 };
 
