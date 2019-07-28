@@ -165,12 +165,18 @@ const deleteUserError = err => {
   };
 };
 
-export const deleteUser = id => dispatch => {
+export const deleteUser = (id, history) => dispatch => {
   dispatch(deleteUserStart());
   axios
     .delete(`http://localhost:5000/api/users/${id}`)
     .then(res => {
+      console.log('do thut');
       dispatch(deleteUserSuccess(res.data));
+    })
+    .then(() => {
+      console.log('do this');
+      // history.push('/createuser');
+      history.push('/');
     })
     .catch(err => dispatch(deleteUserError(err)));
 };

@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { editUser, initEdit } from '../redux/action-creators/users';
 import { getUser } from '../redux/action-creators/users';
 import { setAlert } from '../redux/action-creators/alert';
-import Loading from './loading';
-import axios from 'axios';
+import Loading, { Alert } from './loading';
+// import axios from 'axios';
 
 const EditUser = ({
   setAlert,
@@ -51,7 +51,9 @@ const EditUser = ({
 
   useEffect(() => {
     getUser(id, setUserData);
-    // setUserData({ ...user });
+    // return () => {
+    //   setUserData({ ...user });
+    // };
     // getUserById(id, setUserData);
   }, []);
 
@@ -108,6 +110,7 @@ const EditUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='firstname'
                 />
+                {!firstname && <Alert warning='empty' item='firstname' />}
               </div>
               <div className='form-group'>
                 * Last Name:{' '}
@@ -118,6 +121,7 @@ const EditUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='lastname'
                 />
+                {!lastname && <Alert warning='empty' item='lastname' />}
               </div>
               <div className='form-group'>
                 * Sex:{' '}
@@ -128,6 +132,7 @@ const EditUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='sex'
                 />
+                {!sex && <Alert warning='empty' item='sex' />}
               </div>
               <div className='form-group'>
                 * Age:{' '}
@@ -138,6 +143,7 @@ const EditUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='age'
                 />
+                {!age && <Alert warning='empty' item='age' />}
               </div>
               <div className='form-group'>
                 * Password:{' '}
@@ -149,6 +155,7 @@ const EditUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='password'
                 />
+                {!password && <Alert warning='empty' item='password' />}
               </div>
               <div className='form-group'>
                 * Repeat:{' '}
@@ -160,6 +167,10 @@ const EditUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='repeat'
                 />
+                {!repeat && <Alert warning='empty' item='confirmed password' />}
+                {repeat && password !== repeat && (
+                  <Alert warning='match' item='password' />
+                )}
               </div>
               <div className='btn-row'>
                 <div className='btn-left'>

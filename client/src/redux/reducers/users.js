@@ -8,7 +8,7 @@
 const initState = {
   users: [],
   error: null,
-  // deleteId: null,
+  deleteId: null,
   isLoading: false
 };
 
@@ -21,18 +21,20 @@ const users = (state = initState, action) => {
       return { ...state, ...payload, isLoading: false };
     case 'SET_USER_LIST_ERROR':
       return { ...state, ...payload, isLoading: false };
-    // case 'DELETE_USER_START':
-    //   return { ...state, isLoading: true };
-    // case 'DELETE_USER_SUCCESS':
-    //   // console.log(payload._id, ' in reducer');
-    //   return {
-    //     ...state,
-    //     users: users.filter(user => user._id !== payload._id),
-    //     deleteId: payload._id,
-    //     isLoading: false
-    //   };
-    // case 'DELETE_USER_ERROR':
-    //   return { ...state, ...payload, isLoading: false };
+    case 'DELETE_USER_START':
+      return { ...state, isLoading: true };
+    case 'DELETE_USER_SUCCESS':
+      console.log(payload._id, ' in reducer');
+      console.log(users);
+      return {
+        ...state,
+        users: [...users.filter(user => user._id !== payload._id)],
+        // users: [],
+        deleteId: payload._id,
+        isLoading: false
+      };
+    case 'DELETE_USER_ERROR':
+      return { ...state, ...payload, isLoading: false };
     // // case 'INIT_DELETE':
     // //   return { ...state, ...payload };
     default:

@@ -12,7 +12,8 @@ const Home = ({
   initEdit,
   deleteUser,
   deleteIds,
-  isLoading
+  isLoading,
+  isDeleting
 }) => {
   useEffect(() => {
     initUser();
@@ -20,7 +21,7 @@ const Home = ({
     setUserList();
   }, []); //initUser, initEdit, setUserList
 
-  const maxRowsPerPage = 7; // set max rows per page
+  const maxRowsPerPage = 20; // set max rows per page
   let activeUsers = 0; // init index of users
   // @@ is this DANGEROUS ?
 
@@ -33,6 +34,8 @@ const Home = ({
   const [queryCur, setQueryCur] = useState(''); // store the query for search
 
   const [activePage, setActivePage] = useState(1);
+
+  // const [test, setTest] = useState(users.length);
   // sortType: 1 for ascend, 2 for descend, 0 for default
   // if need remember page back, try redux
 
@@ -59,7 +62,7 @@ const Home = ({
   };
 
   const handleDelete = id => {
-    deleteUser(id);
+    deleteUser(id, history);
     // setDeleteId(id);
   };
 
@@ -288,7 +291,7 @@ const Home = ({
         </button>
       </nav>
       <div>
-        {isLoading ? (
+        {isLoading || isDeleting ? (
           <Loading />
         ) : (
           <div>
@@ -343,61 +346,62 @@ const Home = ({
                     ? [...sortUserByAttr(users, actAttr).reverse()]
                     : users
                   )
-                    .map(user => {
-                      if (deleteIds.indexOf(user._id) === -1) {
-                        return {
-                          ...user,
-                          index: activeUsers++
-                        };
-                      } else {
-                        return null; // id in deleteId list
-                      }
-                    })
-                    .filter(user => user) // user exists
-                    .filter(
-                      user =>
-                        (activePage - 1) * maxRowsPerPage <= user.index &&
-                        activePage * maxRowsPerPage > user.index
-                    )
+                    // .map(user => {
+                    //   if (deleteIds.indexOf(user._id) === -1) {
+                    //     return {
+                    //       ...user,
+                    //       index: activeUsers++
+                    //     };
+                    //   } else {
+                    //     return null; // id in deleteId list
+                    //   }
+                    // })
+                    // .filter(user => user) // user exists
+                    // .filter(
+                    //   user =>
+                    //     (activePage - 1) * maxRowsPerPage <= user.index &&
+                    //     activePage * maxRowsPerPage > user.index
+                    // )
                     .map(user => {
                       return (
-                        !isLoading &&
-                        deleteIds.indexOf(user._id) === -1 && (
-                          <tr className='user' key={user._id}>
-                            <td>
-                              <button
-                                className='btn btn-outline-primary btn-sm'
-                                onClick={e => handleEdit(user._id)}
-                              >
-                                <i className='fas fa-pen' /> Edit
-                              </button>
-                            </td>
-                            <td>
-                              <button
-                                className='btn btn-outline-danger btn-sm'
-                                onClick={e => handleDelete(user._id)}
-                              >
-                                <i className='fas fa-trash' /> Delete
-                              </button>
-                            </td>
-                            <td>
-                              <div className='table-data'>{user.firstname}</div>
-                            </td>
-                            <td>
-                              <div className='table-data'>{user.lastname}</div>
-                            </td>
-                            <td>
-                              <div className='table-data'>{user.sex}</div>
-                            </td>
-                            <td>
-                              <div className='table-data'>{user.age}</div>
-                            </td>
-                          </tr>
-                        )
+                        // !isDeleting &&
+                        // deleteIds.indexOf(user._id) === -1 && (
+                        <tr className='user' key={user._id}>
+                          <td>
+                            <button
+                              className='btn btn-outline-primary btn-sm'
+                              onClick={e => handleEdit(user._id)}
+                            >
+                              <i className='fas fa-pen' /> Edit
+                            </button>
+                          </td>
+                          <td>
+                            <button
+                              className='btn btn-outline-danger btn-sm'
+                              onClick={e => handleDelete(user._id)}
+                            >
+                              <i className='fas fa-trash' /> Delete
+                            </button>
+                          </td>
+                          <td>
+                            <div className='table-data'>{user.firstname}</div>
+                          </td>
+                          <td>
+                            <div className='table-data'>{user.lastname}</div>
+                          </td>
+                          <td>
+                            <div className='table-data'>{user.sex}</div>
+                          </td>
+                          <td>
+                            <div className='table-data'>{user.age}</div>
+                          </td>
+                        </tr>
                       );
+                      // );
                     })}
                 </tbody>
               </table>
+              <div>{users.length}</div>
             </div>
 
             {/* Pagination Bar */}
@@ -493,8 +497,9 @@ const Home = ({
 const mapStateToProps = state => {
   return {
     users: state.users.users,
-    deleteIds: state.deleteUser.deleteIds,
+    deleteIds: state.users.deleteIds,
     isLoading: state.users.isLoading
+    // isDeleting: state.deleteUser.isLoading
   };
 };
 
@@ -503,7 +508,7 @@ const mapStateToDispatch = dispatch => {
     setUserList: () => dispatch(setUserList()),
     initUser: () => dispatch(initUser()),
     initEdit: () => dispatch(initEdit()),
-    deleteUser: id => dispatch(deleteUser(id))
+    deleteUser: (id, history) => dispatch(deleteUser(id, history))
   };
 };
 

@@ -88,6 +88,7 @@ const CreateUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='lastname'
                 />
+                {!lastname && <Alert warning='empty' item='lastname' />}
               </div>
               <div className='form-group'>
                 * Sex:{' '}
@@ -98,6 +99,7 @@ const CreateUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='sex'
                 />
+                {!sex && <Alert warning='empty' item='sex' />}
               </div>
               <div className='form-group'>
                 * Age:{' '}
@@ -108,6 +110,7 @@ const CreateUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='age'
                 />
+                {!age && <Alert warning='empty' item='age' />}
               </div>
               <div className='form-group'>
                 * Password:{' '}
@@ -119,6 +122,7 @@ const CreateUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='password'
                 />
+                {!password && <Alert warning='empty' item='password' />}
               </div>
               <div className='form-group'>
                 * Repeat:{' '}
@@ -130,6 +134,10 @@ const CreateUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='repeat'
                 />
+                {!repeat && <Alert warning='empty' item='confirmed password' />}
+                {repeat && password !== repeat && (
+                  <Alert warning='match' item='password' />
+                )}
               </div>
               <div className='btn-row'>
                 <div className='btn-left'>

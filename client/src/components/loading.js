@@ -11,14 +11,15 @@ const Loading = () => {
   );
 };
 
-export const Alert = (warning, item) => {
-  const alert = '';
+export const Alert = ({ warning, item }) => {
+  let alert = '';
   switch (warning) {
     case 'empty':
       alert = item + ' cannot be empty!';
+      break;
     case 'match':
       alert = item + ' does not match!';
-
+      break;
     default:
       break;
   }
