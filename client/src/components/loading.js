@@ -20,6 +20,9 @@ export const Alert = ({ warning, item }) => {
     case 'match':
       alert = item + ' does not match!';
       break;
+    case 'invalid':
+      alert = item + ' you type is invalid!';
+      break;
     default:
       break;
   }

@@ -75,19 +75,21 @@ const Home = ({
 
   const sortUserByAttr = (users, attribute) => {
     // Don't change the USERS array!
+    // ignore Upper and Lower differences, sex can be F/M or whole word
     switch (attribute) {
       case 'firstname':
         return [...users].sort((a, b) =>
-          a.firstname > b.firstname
+          a.firstname.toLowerCase() > b.firstname.toLowerCase()
             ? 1
-            : a.firstname === b.firstname
-            ? a.lastname > b.lastname
+            : a.firstname.toLowerCase() === b.firstname.toLowerCase()
+            ? a.lastname.toLowerCase() > b.lastname.toLowerCase()
               ? 1
-              : a.lastname === b.lastname
+              : a.lastname.toLowerCase() === b.lastname.toLowerCase()
               ? a.age > b.age
                 ? 1
                 : a.age === b.age
-                ? a.sex > b.sex
+                ? a.sex.toLowerCase().slice(0, 1) >
+                  b.sex.toLowerCase().slice(0, 1)
                   ? 1
                   : -1
                 : -1
@@ -97,16 +99,17 @@ const Home = ({
 
       case 'lastname':
         return [...users].sort((a, b) =>
-          a.lastname > b.lastname
+          a.lastname.toLowerCase() > b.lastname.toLowerCase()
             ? 1
-            : a.lastname === b.lastname
-            ? a.firstname > b.firstname
+            : a.lastname.toLowerCase() === b.lastname.toLowerCase()
+            ? a.firstname.toLowerCase() > b.firstname.toLowerCase()
               ? 1
-              : a.firstname === b.firstname
+              : a.firstname.toLowerCase() === b.firstname.toLowerCase()
               ? a.age > b.age
                 ? 1
                 : a.age === b.age
-                ? a.sex > b.sex
+                ? a.sex.toLowerCase().slice(0, 1) >
+                  b.sex.toLowerCase().slice(0, 1)
                   ? 1
                   : -1
                 : -1
@@ -116,15 +119,16 @@ const Home = ({
 
       case 'sex':
         return [...users].sort((a, b) =>
-          a.sex > b.sex
+          a.sex.toLowerCase().slice(0, 1) > b.sex.toLowerCase().slice(0, 1)
             ? 1
-            : a.sex === b.sex
-            ? a.firstname > b.firstname
+            : a.sex.toLowerCase().slice(0, 1) ===
+              b.sex.toLowerCase().slice(0, 1)
+            ? a.firstname.toLowerCase() > b.firstname.toLowerCase()
               ? 1
-              : a.firstname === b.firstname
-              ? a.lastname > b.lastname
+              : a.firstname.toLowerCase() === b.firstname.toLowerCase()
+              ? a.lastname.toLowerCase() > b.lastname.toLowerCase()
                 ? 1
-                : a.lastname === b.lastname
+                : a.lastname.toLowerCase() === b.lastname.toLowerCase()
                 ? a.age > b.age
                   ? 1
                   : -1
@@ -139,13 +143,14 @@ const Home = ({
           a.age > b.age
             ? 1
             : a.age === b.age
-            ? a.firstname > b.firstname
+            ? a.firstname.toLowerCase() > b.firstname.toLowerCase()
               ? 1
-              : a.firstname === b.firstname
-              ? a.lastname > b.lastname
+              : a.firstname.toLowerCase() === b.firstname.toLowerCase()
+              ? a.lastname.toLowerCase() > b.lastname.toLowerCase()
                 ? 1
-                : a.lastname === b.lastname
-                ? a.sex > b.sex
+                : a.lastname.toLowerCase() === b.lastname.toLowerCase()
+                ? a.sex.toLowerCase().slice(0, 1) >
+                  b.sex.toLowerCase().slice(0, 1)
                   ? 1
                   : -1
                 : -1
@@ -247,16 +252,68 @@ const Home = ({
     );
   };
 
-  const searchUser = (user, queryCur) => {
-    return (
-      user.firstname
-        .toLowerCase()
-        .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
-      user.lastname.toLowerCase().indexOf(queryCur.toString().toLowerCase()) !==
-        -1 ||
-      user.sex.toLowerCase().indexOf(queryCur.toString().toLowerCase()) !==
-        -1 ||
-      user.age.toString().indexOf(queryCur.toString()) !== -1
+  const searchUser = (users, queryCur) => {
+    // this func filter users based on search query
+    return users.filter(
+      user =>
+        user.firstname
+          .toLowerCase()
+          .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
+        user.lastname
+          .toLowerCase()
+          .indexOf(queryCur.toString().toLowerCase()) !== -1 ||
+        user.sex.toLowerCase().indexOf(queryCur.toString().toLowerCase()) !==
+          -1 ||
+        user.age.toString().indexOf(queryCur.toString()) !== -1
+    );
+  };
+
+  const selectSort = (sortType, users, actAttr) => {
+    // this func sort users based on sort type
+    switch (sortType) {
+      case 1:
+        return sortUserByAttr(users, actAttr);
+      case 2:
+        return [...sortUserByAttr(users, actAttr)].reverse();
+      default:
+        return users;
+    }
+  };
+
+  const activeUser = (queryCur, sortType, users, actAttr) => {
+    // this func return results after search and then sorting
+    if (queryCur) {
+      const searchedUsers = searchUser(users, queryCur);
+      return selectSort(sortType, searchedUsers, actAttr);
+    } else {
+      return selectSort(sortType, users, actAttr);
+    }
+    // (queryCur
+    //   ? (sortType === 1
+    //       ? sortUserByAttr(users, actAttr)
+    //       : sortType === 2
+    //       ? [...sortUserByAttr(users, actAttr).reverse()]
+    //       : users
+    //     ).filter(user => searchUser(user, queryCur))
+    //   : sortType === 1
+    //   ? sortUserByAttr(users, actAttr)
+    //   : sortType === 2
+    //   ? [...sortUserByAttr(users, actAttr).reverse()]
+    //   : users
+    // )
+  };
+
+  const displayUser = (
+    queryCur,
+    sortType,
+    users,
+    actAttr,
+    activePage,
+    maxRowsPerPage
+  ) => {
+    return activeUser(queryCur, sortType, users, actAttr).slice(
+      (activePage - 1) * maxRowsPerPage,
+      activePage * maxRowsPerPage
     );
   };
 
@@ -335,57 +392,47 @@ const Home = ({
                 </thead>
 
                 <tbody>
-                  {(queryCur
-                    ? (sortType === 1
-                        ? sortUserByAttr(users, actAttr)
-                        : sortType === 2
-                        ? [...sortUserByAttr(users, actAttr).reverse()]
-                        : users
-                      ).filter(user => searchUser(user, queryCur))
-                    : sortType === 1
-                    ? sortUserByAttr(users, actAttr)
-                    : sortType === 2
-                    ? [...sortUserByAttr(users, actAttr).reverse()]
-                    : users
-                  )
-                    .slice(
-                      (activePage - 1) * maxRowsPerPage,
-                      activePage * maxRowsPerPage
-                    )
-                    .map(user => {
-                      return (
-                        <tr className='user' key={user._id}>
-                          <td>
-                            <button
-                              className='btn btn-outline-primary btn-sm'
-                              onClick={e => handleEdit(user._id)}
-                            >
-                              <i className='fas fa-pen' /> Edit
-                            </button>
-                          </td>
-                          <td>
-                            <button
-                              className='btn btn-outline-danger btn-sm'
-                              onClick={e => handleDelete(user._id)}
-                            >
-                              <i className='fas fa-trash' /> Delete
-                            </button>
-                          </td>
-                          <td>
-                            <div className='table-data'>{user.firstname}</div>
-                          </td>
-                          <td>
-                            <div className='table-data'>{user.lastname}</div>
-                          </td>
-                          <td>
-                            <div className='table-data'>{user.sex}</div>
-                          </td>
-                          <td>
-                            <div className='table-data'>{user.age}</div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                  {displayUser(
+                    queryCur,
+                    sortType,
+                    users,
+                    actAttr,
+                    activePage,
+                    maxRowsPerPage
+                  ).map(user => {
+                    return (
+                      <tr className='user' key={user._id}>
+                        <td>
+                          <button
+                            className='btn btn-outline-primary btn-sm'
+                            onClick={e => handleEdit(user._id)}
+                          >
+                            <i className='fas fa-pen' /> Edit
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            className='btn btn-outline-danger btn-sm'
+                            onClick={e => handleDelete(user._id)}
+                          >
+                            <i className='fas fa-trash' /> Delete
+                          </button>
+                        </td>
+                        <td>
+                          <div className='table-data'>{user.firstname}</div>
+                        </td>
+                        <td>
+                          <div className='table-data'>{user.lastname}</div>
+                        </td>
+                        <td>
+                          <div className='table-data'>{user.sex}</div>
+                        </td>
+                        <td>
+                          <div className='table-data'>{user.age}</div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
               {/* <div>{users.length}</div> */}

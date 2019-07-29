@@ -78,6 +78,9 @@ const CreateUser = ({
                   placeholder='firstname'
                 />
                 {!firstname && <Alert warning='empty' item='firstname' />}
+                {firstname && !/^[a-zA-Z]+$/.test(firstname) && (
+                  <Alert warning='invalid' item='firstname' />
+                )}
               </div>
               <div className='form-group'>
                 * Last Name:{' '}
@@ -89,6 +92,9 @@ const CreateUser = ({
                   placeholder='lastname'
                 />
                 {!lastname && <Alert warning='empty' item='lastname' />}
+                {lastname && !/^[a-zA-Z]+$/.test(lastname) && (
+                  <Alert warning='invalid' item='lastname' />
+                )}
               </div>
               <div className='form-group'>
                 * Sex:{' '}
@@ -99,7 +105,13 @@ const CreateUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='sex'
                 />
+                <small className='form-text text-muted'>
+                  Valid inputs are f, m, female, or male
+                </small>
                 {!sex && <Alert warning='empty' item='sex' />}
+                {sex &&
+                  ['f', 'm', 'female', 'male'].indexOf(sex.toLowerCase()) ===
+                    -1 && <Alert warning='invalid' item='sex' />}
               </div>
               <div className='form-group'>
                 * Age:{' '}
@@ -111,6 +123,12 @@ const CreateUser = ({
                   placeholder='age'
                 />
                 {!age && <Alert warning='empty' item='age' />}
+                {age &&
+                  (isNaN(age) ||
+                    Math.abs(parseInt(age)).toString() !== age.toString()) && (
+                    <Alert warning='invalid' item='age' />
+                  )}
+                {/* test server error here cause server will return err when age is not a number */}
               </div>
               <div className='form-group'>
                 * Password:{' '}
