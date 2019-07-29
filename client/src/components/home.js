@@ -2,20 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { setUserList } from '../redux/action-creators/users';
 import { connect } from 'react-redux';
 import { initUser, initEdit, deleteUser } from '../redux/action-creators/users';
-import Loading from './loading';
+import Loading, { Alert } from './loading';
 
 const Home = ({
   users,
   setUserList,
   history,
   initUser,
-  // initEdit,
+  initEdit,
   deleteUser,
-  isLoading
+  isLoading,
+  error,
+  deleteError
 }) => {
   useEffect(() => {
     initUser();
-    // initEdit();
+    initEdit();
     setUserList();
   }, []); //initUser, initEdit, setUserList
 
@@ -51,6 +53,8 @@ const Home = ({
 
   const handleSearch = e => {
     e.preventDefault();
+    // protect out of page
+    setActivePage(1);
     setQueryCur(query);
   };
 
@@ -183,7 +187,12 @@ const Home = ({
   };
 
   const handleLastPage = e => {
-    setActivePage(parseInt((users.length - 1) / maxRowsPerPage) + 1);
+    setActivePage(
+      parseInt(
+        (activeUser(queryCur, sortType, users, actAttr).length - 1) /
+          maxRowsPerPage
+      ) + 1
+    );
   };
 
   const handlePageGoTo = e => {
@@ -192,7 +201,12 @@ const Home = ({
     if (
       !isNaN(goToPage) &&
       goToPage >= 1 &&
-      goToPage <= parseInt((users.length - 1) / maxRowsPerPage) + 1
+      goToPage <=
+        parseInt(
+          (activeUser(queryCur, sortType, users, actAttr).length - 1) /
+            maxRowsPerPage
+        ) +
+          1
     )
       setActivePage(parseInt(goToPage)); // prevent invalid input
     // in case decimal: 1.2, 2.6, ...
@@ -318,7 +332,11 @@ const Home = ({
   };
 
   //render part ********
-  if (users.length > 0 && users.length === (activePage - 1) * maxRowsPerPage) {
+  if (
+    activeUser(queryCur, sortType, users, actAttr).length > 0 &&
+    activeUser(queryCur, sortType, users, actAttr).length ===
+      (activePage - 1) * maxRowsPerPage
+  ) {
     // if it is this page's last user, after delete, back to prev page
     // empty list stay in 1st page
     setActivePage(activePage - 1);
@@ -460,7 +478,11 @@ const Home = ({
                   </button>
                 </li>
                 {setPagination(
-                  parseInt((users.length - 1) / maxRowsPerPage) + 1,
+                  parseInt(
+                    (activeUser(queryCur, sortType, users, actAttr).length -
+                      1) /
+                      maxRowsPerPage
+                  ) + 1,
                   activePage
                 ).map(page => {
                   if (page === '...') {
@@ -493,7 +515,12 @@ const Home = ({
                     className='page-btn'
                     onClick={e => handleNextPage()}
                     disabled={
-                      activePage > parseInt((users.length - 1) / maxRowsPerPage)
+                      activePage >
+                      parseInt(
+                        (activeUser(queryCur, sortType, users, actAttr).length -
+                          1) /
+                          maxRowsPerPage
+                      )
                     }
                   >
                     {'>'}
@@ -504,7 +531,12 @@ const Home = ({
                     className='page-btn'
                     onClick={e => handleLastPage()}
                     disabled={
-                      activePage > parseInt((users.length - 1) / maxRowsPerPage)
+                      activePage >
+                      parseInt(
+                        (activeUser(queryCur, sortType, users, actAttr).length -
+                          1) /
+                          maxRowsPerPage
+                      )
                     }
                   >
                     {'>>'}
@@ -512,6 +544,8 @@ const Home = ({
                 </li>
               </ul>
             </div>
+            {error && <Alert waring='server' item='get' />}
+            {deleteError && <Alert waring='server' item='delete' />}
           </div>
         )}
       </div>
@@ -522,7 +556,9 @@ const Home = ({
 const mapStateToProps = state => {
   return {
     users: state.users.users,
-    isLoading: state.users.isLoading
+    isLoading: state.users.isLoading,
+    error: state.users.error,
+    deleteError: state.users.deleteError
   };
 };
 

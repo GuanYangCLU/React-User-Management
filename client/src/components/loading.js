@@ -23,10 +23,13 @@ export const Alert = ({ warning, item }) => {
     case 'invalid':
       alert = item + ' you type is invalid!';
       break;
+    case 'server':
+      alert = 'server failed to ' + item;
+      break;
     default:
       break;
   }
-  return <div className='alert-text'>{alert}</div>;
+  return <small className='alert-text'>{alert}</small>;
 };
 
 export default Loading;

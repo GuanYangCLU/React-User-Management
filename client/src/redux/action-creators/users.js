@@ -3,7 +3,7 @@ import axios from 'axios';
 const setUserListStart = () => {
   return {
     type: 'SET_USER_LIST_START',
-    payload: {}
+    payload: { error: null, deleteError: null } // init
   };
 };
 
@@ -72,12 +72,13 @@ export const initUser = () => dispatch => {
   dispatch({
     type: 'INIT_USER',
     payload: {
-      firstname: null,
-      lastname: null,
-      sex: null,
-      age: null,
-      password: null,
-      createSuccess: false
+      firstname: '',
+      lastname: '',
+      sex: '',
+      age: '',
+      password: '',
+      createSuccess: false,
+      error: null
     }
   });
 };
@@ -136,7 +137,8 @@ export const initEdit = () => dispatch => {
       sex: '',
       age: '',
       password: '',
-      editSuccess: false
+      editSuccess: false,
+      error: null
     }
   });
 };
@@ -161,7 +163,7 @@ const deleteUserStart = () => {
 const deleteUserError = err => {
   return {
     type: 'DELETE_USER_ERROR',
-    payload: { error: err }
+    payload: { deleteError: err }
   };
 };
 

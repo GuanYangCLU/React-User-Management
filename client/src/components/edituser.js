@@ -17,9 +17,12 @@ const EditUser = ({
   isLoading,
   initEdit,
   getUser,
-  user
+  user,
+  error,
+  getError
 }) => {
   const id = match.params.userId;
+  const stdSex = ['f', 'm', 'female', 'male'];
 
   const [userData, setUserData] = useState({
     firstname: '',
@@ -80,6 +83,37 @@ const EditUser = ({
     history.push('/');
   };
 
+  const disableEdit = (
+    firstname,
+    lastname,
+    sex,
+    age,
+    password,
+    repeat,
+    user
+  ) => {
+    return (
+      !(
+        firstname &&
+        lastname &&
+        sex &&
+        age &&
+        password &&
+        repeat &&
+        password === repeat &&
+        /^[a-zA-Z]+$/.test(firstname) &&
+        /^[a-zA-Z]+$/.test(lastname) &&
+        stdSex.indexOf(sex.toLowerCase()) !== -1 &&
+        !isNaN(age) &&
+        Math.abs(parseInt(age)).toString() === age.toString()
+      ) ||
+      (user.firstname === firstname &&
+        user.lastname === lastname &&
+        user.sex === sex &&
+        user.age === age)
+    );
+  };
+
   // in render it can do, but not recommand
   // if (editSuccess) {
   //   initEdit();
@@ -111,6 +145,9 @@ const EditUser = ({
                   placeholder='firstname'
                 />
                 {!firstname && <Alert warning='empty' item='firstname' />}
+                {firstname && !/^[a-zA-Z]+$/.test(firstname) && (
+                  <Alert warning='invalid' item='firstname' />
+                )}
               </div>
               <div className='form-group'>
                 * Last Name:{' '}
@@ -122,6 +159,9 @@ const EditUser = ({
                   placeholder='lastname'
                 />
                 {!lastname && <Alert warning='empty' item='lastname' />}
+                {lastname && !/^[a-zA-Z]+$/.test(lastname) && (
+                  <Alert warning='invalid' item='lastname' />
+                )}
               </div>
               <div className='form-group'>
                 * Sex:{' '}
@@ -132,7 +172,13 @@ const EditUser = ({
                   onChange={e => handleChange(e)}
                   placeholder='sex'
                 />
+                <small className='form-text text-muted'>
+                  Valid inputs are f, m, female, or male, not case sensitive
+                </small>
                 {!sex && <Alert warning='empty' item='sex' />}
+                {sex && stdSex.indexOf(sex.toLowerCase()) === -1 && (
+                  <Alert warning='invalid' item='sex' />
+                )}
               </div>
               <div className='form-group'>
                 * Age:{' '}
@@ -144,6 +190,12 @@ const EditUser = ({
                   placeholder='age'
                 />
                 {!age && <Alert warning='empty' item='age' />}
+                {age &&
+                  (isNaN(age) ||
+                    Math.abs(parseInt(age)).toString() !== age.toString()) && (
+                    <Alert warning='invalid' item='age' />
+                  )}
+                {/* test server ERROR here, block validation, let backend do */}
               </div>
               <div className='form-group'>
                 * Password:{' '}
@@ -172,6 +224,8 @@ const EditUser = ({
                   <Alert warning='match' item='password' />
                 )}
               </div>
+              {error && <Alert warning='server' item='edit' />}
+              {getError && <Alert warning='server' item='get' />}
               <div className='btn-row'>
                 <div className='btn-left'>
                   <button
@@ -179,19 +233,28 @@ const EditUser = ({
                     // value='Submit'
                     type='submit'
                     disabled={
-                      !(
-                        firstname &&
-                        lastname &&
-                        sex &&
-                        age &&
-                        password &&
-                        repeat &&
-                        password === repeat
-                      ) ||
-                      (user.firstname === firstname &&
-                        user.lastname === lastname &&
-                        user.sex === sex &&
-                        user.age === age)
+                      disableEdit(
+                        firstname,
+                        lastname,
+                        sex,
+                        age,
+                        password,
+                        repeat,
+                        user
+                      )
+                      // !(
+                      //   firstname &&
+                      //   lastname &&
+                      //   sex &&
+                      //   age &&
+                      //   password &&
+                      //   repeat &&
+                      //   password === repeat
+                      // ) ||
+                      // (user.firstname === firstname &&
+                      //   user.lastname === lastname &&
+                      //   user.sex === sex &&
+                      //   user.age === age)
                     }
                   >
                     <i className='fas fa-arrow-down' /> Save Changes
@@ -219,7 +282,10 @@ const mapStateToProps = state => {
     alertContent: state.alert.alertContent,
     editSuccess: state.editUser.editSuccess,
     isLoading: state.editUser.isLoading,
-    user: state.getUser.user
+    user: state.getUser.user,
+    // use this user in file check whether the file be changed in the very bottom
+    error: state.editUser.error,
+    getError: state.getUser.error
   };
 };
 

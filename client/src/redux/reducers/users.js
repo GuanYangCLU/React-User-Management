@@ -1,7 +1,7 @@
 const initState = {
   users: [],
   error: null,
-  // deleteId: null,
+  deleteError: null,
   isLoading: false
 };
 

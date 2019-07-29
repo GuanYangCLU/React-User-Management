@@ -11,9 +11,11 @@ const CreateUser = ({
   alertContent,
   history,
   createSuccess,
-  isLoading
+  isLoading,
+  error
 }) => {
   // useEffect(() => initUser(), []); // may not need anymore
+  const stdSex = ['f', 'm', 'female', 'male'];
 
   const [userData, setUserData] = useState({
     firstname: '',
@@ -52,6 +54,23 @@ const CreateUser = ({
 
   const handleBack = () => {
     history.push('/');
+  };
+
+  const disableCreate = (firstname, lastname, sex, age, password, repeat) => {
+    return !(
+      firstname &&
+      lastname &&
+      sex &&
+      age &&
+      password &&
+      repeat &&
+      password === repeat &&
+      /^[a-zA-Z]+$/.test(firstname) &&
+      /^[a-zA-Z]+$/.test(lastname) &&
+      stdSex.indexOf(sex.toLowerCase()) !== -1 &&
+      !isNaN(age) &&
+      Math.abs(parseInt(age)).toString() === age.toString()
+    );
   };
 
   return (
@@ -106,7 +125,7 @@ const CreateUser = ({
                   placeholder='sex'
                 />
                 <small className='form-text text-muted'>
-                  Valid inputs are f, m, female, or male
+                  Valid inputs are f, m, female, or male, not case sensitive
                 </small>
                 {!sex && <Alert warning='empty' item='sex' />}
                 {sex &&
@@ -157,6 +176,7 @@ const CreateUser = ({
                   <Alert warning='match' item='password' />
                 )}
               </div>
+              {error && <Alert warning='server' item='create' />}
               <div className='btn-row'>
                 <div className='btn-left'>
                   <button
@@ -164,15 +184,23 @@ const CreateUser = ({
                     // value='Submit'
                     type='submit'
                     disabled={
-                      !(
-                        firstname &&
-                        lastname &&
-                        sex &&
-                        age &&
-                        password &&
-                        repeat &&
-                        password === repeat
+                      disableCreate(
+                        firstname,
+                        lastname,
+                        sex,
+                        age,
+                        password,
+                        repeat
                       )
+                      // !(
+                      //   firstname &&
+                      //   lastname &&
+                      //   sex &&
+                      //   age &&
+                      //   password &&
+                      //   repeat &&
+                      //   password === repeat
+                      // )
                     }
                   >
                     <i className='fas fa-arrow-down' /> Add User
@@ -200,7 +228,8 @@ const mapStateToProps = state => {
   return {
     alertContent: state.alert.alertContent,
     createSuccess: state.createUser.createSuccess,
-    isLoading: state.createUser.isLoading
+    isLoading: state.createUser.isLoading,
+    error: state.createUser.error
   };
 };
 
