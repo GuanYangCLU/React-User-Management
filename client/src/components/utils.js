@@ -1,7 +1,7 @@
 import React from 'react';
 import { ReactComponent as Spinner } from '../styles/icons/spinner-solid.svg';
 
-const Loading = () => {
+export const Loading = () => {
   return (
     <div className='loading'>
       {/* <i className='fas fa-spinner' /> */}
@@ -32,4 +32,4 @@ export const Alert = ({ warning, item }) => {
   return <small className='alert-text'>{alert}</small>;
 };
 
-export default Loading;
+// export default Loading;

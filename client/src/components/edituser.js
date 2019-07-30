@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { editUser, initEdit } from '../redux/action-creators/users';
 import { getUser } from '../redux/action-creators/users';
 import { setAlert } from '../redux/action-creators/alert';
-import Loading, { Alert } from './loading';
+import { Loading, Alert } from './utils';
 // import axios from 'axios';
 
 const EditUser = ({
@@ -15,6 +15,7 @@ const EditUser = ({
   editSuccess,
   match,
   isLoading,
+  isGetting,
   initEdit,
   getUser,
   user,
@@ -125,7 +126,7 @@ const EditUser = ({
       {//   editSuccess ? (
       //   <Redirect to='/' />
       // ) :
-      isLoading ? (
+      isLoading || isGetting ? (
         <Loading />
       ) : (
         <div>
@@ -282,6 +283,7 @@ const mapStateToProps = state => {
     alertContent: state.alert.alertContent,
     editSuccess: state.editUser.editSuccess,
     isLoading: state.editUser.isLoading,
+    isGetting: state.getUser.isLoading,
     user: state.getUser.user,
     // use this user in file check whether the file be changed in the very bottom
     error: state.editUser.error,

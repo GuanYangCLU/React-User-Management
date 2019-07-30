@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createUser, initUser } from '../redux/action-creators/users';
 import { setAlert } from '../redux/action-creators/alert';
-import Loading, { Alert } from './loading';
+import { Loading, Alert } from './utils';
 
 const CreateUser = ({
   setAlert,
