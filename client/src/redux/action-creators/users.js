@@ -152,13 +152,13 @@ const deleteUserStart = () => {
   };
 };
 
-// const deleteUserSuccess = userData => {
-//   // console.log(userData);
-//   return {
-//     type: 'DELETE_USER_SUCCESS',
-//     payload: userData
-//   };
-// };
+const deleteUserSuccess = () => {
+  // console.log(userData);
+  return {
+    type: 'DELETE_USER_SUCCESS'
+    // payload: userData
+  };
+};
 
 const deleteUserError = err => {
   return {
@@ -172,7 +172,7 @@ export const deleteUser = id => dispatch => {
   axios
     .delete(`http://localhost:5000/api/users/${id}`)
     .then(() => {
-      // dispatch(deleteUserSuccess(res.data)); //might use if we need deleted id
+      dispatch(deleteUserSuccess()); //might use if we need deleted id
       dispatch(setUserList());
     })
     .catch(err => dispatch(deleteUserError(err)));
